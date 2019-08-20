@@ -3,7 +3,7 @@
 require './lib/dbee/providers/active_record_provider/version'
 
 Gem::Specification.new do |s|
-  s.name        = 'dbee'
+  s.name        = 'dbee-active_record'
   s.version     = Dbee::Providers::ActiveRecordProvider::VERSION
   s.summary     = 'Plugs in ActiveRecord so Dbee can use Arel for SQL generation.'
 
@@ -21,10 +21,15 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.3.8'
 
+  s.add_dependency('activerecord', '~>5', '>=5.2.1')
+  s.add_dependency('dbee', '>=1.0.0.pre.alpha.1')
+
   s.add_development_dependency('guard-rspec', '~>4.7')
+  s.add_development_dependency('mysql2', '~>0.5')
   s.add_development_dependency('pry', '~>0')
   s.add_development_dependency('rspec', '~> 3.8')
   s.add_development_dependency('rubocop', '~>0.63.1')
   s.add_development_dependency('simplecov', '~>0.16.1')
   s.add_development_dependency('simplecov-console', '~>0.4.2')
+  s.add_development_dependency('sqlite3', '~>1')
 end

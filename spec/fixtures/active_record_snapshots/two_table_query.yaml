@@ -1,0 +1,44 @@
+model_name: Theaters, Members, and Movies
+query:
+  fields:
+    - key_path: id
+    - key_path: name
+    - key_path: members.id
+    - key_path: members.account_number
+  limit: 12
+sqlite_readable: |+
+  SELECT
+   "theaters"."id" AS 'id',
+  "theaters"."name" AS 'name',
+  "members"."id" AS 'members_id',
+  "members"."account_number" AS 'members_account_number'
+  FROM "theaters" "theaters"
+  LEFT OUTER JOIN "members" "members" ON "members"."tid" = "theaters"."id" AND "members"."partition" = "theaters"."partition"
+  LIMIT 12
+sqlite_not_readable: |+
+  SELECT
+   "t0"."id" AS 'c0',
+  "t0"."name" AS 'c1',
+  "t1"."id" AS 'c2',
+  "t1"."account_number" AS 'c3'
+  FROM "theaters" "t0"
+  LEFT OUTER JOIN "members" "t1" ON "t1"."tid" = "t0"."id" AND "t1"."partition" = "t0"."partition"
+  LIMIT 12
+mysql_readable: |+
+  SELECT
+   `theaters`.`id` AS 'id',
+  `theaters`.`name` AS 'name',
+  `members`.`id` AS 'members_id',
+  `members`.`account_number` AS 'members_account_number'
+  FROM `theaters` `theaters`
+  LEFT OUTER JOIN `members` `members` ON `members`.`tid` = `theaters`.`id` AND `members`.`partition` = `theaters`.`partition`
+  LIMIT 12
+mysql_not_readable: |+
+  SELECT
+   `t0`.`id` AS 'c0',
+  `t0`.`name` AS 'c1',
+  `t1`.`id` AS 'c2',
+  `t1`.`account_number` AS 'c3'
+  FROM `theaters` `t0`
+  LEFT OUTER JOIN `members` `t1` ON `t1`.`tid` = `t0`.`id` AND `t1`.`partition` = `t0`.`partition`
+  LIMIT 12

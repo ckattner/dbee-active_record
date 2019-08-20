@@ -3,3 +3,5 @@
 /tmp
 /coverage
 Gemfile.lock
+/pkg
+/spec/config/database.yaml

@@ -1,0 +1,31 @@
+model_name: Theaters, Members, and Movies
+query:
+  fields:
+    - key_path: id
+    - key_path: name
+  sorters:
+    - key_path: created_at
+sqlite_readable: |+
+  SELECT
+  "theaters"."id" AS 'id',
+  "theaters"."name" AS 'name'
+  FROM "theaters" "theaters"
+  ORDER BY "theaters"."created_at"
+sqlite_not_readable: |+
+  SELECT
+  "t0"."id" AS 'c0',
+  "t0"."name" AS 'c1'
+  FROM "theaters" "t0"
+  ORDER BY "t0"."created_at"
+mysql_readable: |+
+  SELECT
+  `theaters`.`id` AS 'id',
+  `theaters`.`name` AS 'name'
+  FROM `theaters` `theaters`
+  ORDER BY `theaters`.`created_at`
+mysql_not_readable: |+
+  SELECT
+  `t0`.`id` AS 'c0',
+  `t0`.`name` AS 'c1'
+  FROM `theaters` `t0`
+  ORDER BY `t0`.`created_at`

@@ -1,0 +1,77 @@
+model_name: Theaters, Members, and Movies
+query:
+  fields:
+    - key_path: members.demos.phone_numbers.phone_number
+      display: PHONE NUMBER
+    - key_path: members.demos.name
+    - key_path: id
+    - key_path: name
+    - key_path: members.movies.id
+    - key_path: members.id
+    - key_path: members.account_number
+    - key_path: members.demos.phone_numbers.phone_type
+    - key_path: members.movies.name
+sqlite_readable: |+
+  SELECT
+  "members_demos_phone_numbers"."phone_number" AS 'PHONE NUMBER',
+  "members_demos"."name" AS 'members_demos_name',
+  "theaters"."id" AS 'id',
+  "theaters"."name" AS 'name',
+  "members_movies"."id" AS 'members_movies_id',
+  "members"."id" AS 'members_id',
+  "members"."account_number" AS 'members_account_number',
+  "members_demos_phone_numbers"."phone_type" AS 'members_demos_phone_numbers_phone_type',
+  "members_movies"."name" AS 'members_movies_name'
+  FROM "theaters" "theaters"
+  LEFT OUTER JOIN "members" "members" ON "members"."tid" = "theaters"."id" AND "members"."partition" = "theaters"."partition"
+  LEFT OUTER JOIN "demographics" "members_demos" ON "members_demos"."member_id" = "members"."id"
+  LEFT OUTER JOIN "phone_numbers" "members_demos_phone_numbers" ON "members_demos_phone_numbers"."demographic_id" = "members_demos"."id"
+  LEFT OUTER JOIN "movies" "members_movies" ON "members_movies"."member_id" = "members"."id"
+sqlite_not_readable: |+
+  SELECT
+  "t3"."phone_number" AS 'c0',
+  "t2"."name" AS 'c1',
+  "t0"."id" AS 'c2',
+  "t0"."name" AS 'c3',
+  "t4"."id" AS 'c4',
+  "t1"."id" AS 'c5',
+  "t1"."account_number" AS 'c6',
+  "t3"."phone_type" AS 'c7',
+  "t4"."name" AS 'c8'
+  FROM "theaters" "t0"
+  LEFT OUTER JOIN "members" "t1" ON "t1"."tid" = "t0"."id" AND "t1"."partition" = "t0"."partition"
+  LEFT OUTER JOIN "demographics" "t2" ON "t2"."member_id" = "t1"."id"
+  LEFT OUTER JOIN "phone_numbers" "t3" ON "t3"."demographic_id" = "t2"."id"
+  LEFT OUTER JOIN "movies" "t4" ON "t4"."member_id" = "t1"."id"
+mysql_readable: |+
+  SELECT
+  `members_demos_phone_numbers`.`phone_number` AS 'PHONE NUMBER',
+  `members_demos`.`name` AS 'members_demos_name',
+  `theaters`.`id` AS 'id',
+  `theaters`.`name` AS 'name',
+  `members_movies`.`id` AS 'members_movies_id',
+  `members`.`id` AS 'members_id',
+  `members`.`account_number` AS 'members_account_number',
+  `members_demos_phone_numbers`.`phone_type` AS 'members_demos_phone_numbers_phone_type',
+  `members_movies`.`name` AS 'members_movies_name'
+  FROM `theaters` `theaters`
+  LEFT OUTER JOIN `members` `members` ON `members`.`tid` = `theaters`.`id` AND `members`.`partition` = `theaters`.`partition`
+  LEFT OUTER JOIN `demographics` `members_demos` ON `members_demos`.`member_id` = `members`.`id`
+  LEFT OUTER JOIN `phone_numbers` `members_demos_phone_numbers` ON `members_demos_phone_numbers`.`demographic_id` = `members_demos`.`id`
+  LEFT OUTER JOIN `movies` `members_movies` ON `members_movies`.`member_id` = `members`.`id`
+mysql_not_readable: |+
+  SELECT
+  `t3`.`phone_number` AS 'c0',
+  `t2`.`name` AS 'c1',
+  `t0`.`id` AS 'c2',
+  `t0`.`name` AS 'c3',
+  `t4`.`id` AS 'c4',
+  `t1`.`id` AS 'c5',
+  `t1`.`account_number` AS 'c6',
+  `t3`.`phone_type` AS 'c7',
+  `t4`.`name` AS 'c8'
+  FROM `theaters` `t0`
+  LEFT OUTER JOIN `members` `t1` ON `t1`.`tid` = `t0`.`id` AND `t1`.`partition` = `t0`.`partition`
+  LEFT OUTER JOIN `demographics` `t2` ON `t2`.`member_id` = `t1`.`id`
+  LEFT OUTER JOIN `phone_numbers` `t3` ON `t3`.`demographic_id` = `t2`.`id`
+  LEFT OUTER JOIN `movies` `t4` ON `t4`.`member_id` = `t1`.`id`

@@ -10,7 +10,14 @@
 module Dbee
   module Providers
     class ActiveRecordProvider
-      VERSION = '1.0.0-alpha'
+      class ExpressionBuilder
+        # Derives Arel#order predicates.
+        class OrderMaker
+          def make(sorter, arel_column)
+            sorter.ascending? ? arel_column : arel_column.desc
+          end
+        end
+      end
     end
   end
 end

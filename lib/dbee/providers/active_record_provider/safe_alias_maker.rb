@@ -10,7 +10,12 @@
 module Dbee
   module Providers
     class ActiveRecordProvider
-      VERSION = '1.0.0-alpha'
+      # This class can be used when readable alias names are expected.
+      class SafeAliasMaker
+        def make(name)
+          name.to_s.tr('.', '_')
+        end
+      end
     end
   end
 end

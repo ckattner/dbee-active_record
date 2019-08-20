@@ -1,0 +1,26 @@
+model_name: Theaters, Members, and Movies
+query:
+  fields:
+    - key_path: id
+      display: 'ID #'
+    - key_path: name
+sqlite_not_readable: |+
+  SELECT
+  "t0"."id" AS 'c0',
+  "t0"."name" AS 'c1'
+  FROM "theaters" "t0"
+sqlite_readable: |+
+  SELECT
+  "theaters"."id" AS 'ID #',
+  "theaters"."name" AS 'name'
+  FROM "theaters" "theaters"
+mysql_not_readable: |+
+  SELECT
+  `t0`.`id` AS 'c0',
+  `t0`.`name` AS 'c1'
+  FROM `theaters` `t0`
+mysql_readable: |+
+  SELECT
+  `theaters`.`id` AS 'ID #',
+  `theaters`.`name` AS 'name'
+  FROM `theaters` `theaters`

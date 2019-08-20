@@ -1,0 +1,104 @@
+model_name: Theaters, Members, and Movies
+query:
+  fields:
+    - key_path: id
+    - key_path: name
+    - key_path: members.id
+    - key_path: members.account_number
+    - key_path: members.movies.id
+    - key_path: members.movies.name
+      display: 'Movie Name'
+    - key_path: members.movies.genre
+    - key_path: members.favorite_comic_movies.id
+    - key_path: members.favorite_comic_movies.name
+      display: 'Favorite Comic Movie Name'
+    - key_path: members.favorite_comic_movies.genre
+    - key_path: members.favorite_mystery_movies.id
+    - key_path: members.favorite_mystery_movies.name
+      display: 'Favorite Mystery Movie Name'
+    - key_path: members.favorite_mystery_movies.genre
+  limit: 12
+sqlite_readable: |+
+  SELECT
+   "theaters"."id" AS 'id',
+  "theaters"."name" AS 'name',
+  "members"."id" AS 'members_id',
+  "members"."account_number" AS 'members_account_number',
+  "members_movies"."id" AS 'members_movies_id',
+  "members_movies"."name" AS 'Movie Name',
+  "members_movies"."genre" AS 'members_movies_genre',
+  "members_favorite_comic_movies"."id" AS 'members_favorite_comic_movies_id',
+  "members_favorite_comic_movies"."name" AS 'Favorite Comic Movie Name',
+  "members_favorite_comic_movies"."genre" AS 'members_favorite_comic_movies_genre',
+  "members_favorite_mystery_movies"."id" AS 'members_favorite_mystery_movies_id',
+  "members_favorite_mystery_movies"."name" AS 'Favorite Mystery Movie Name',
+  "members_favorite_mystery_movies"."genre" AS 'members_favorite_mystery_movies_genre'
+  FROM "theaters" "theaters"
+  LEFT OUTER JOIN "members" "members" ON "members"."tid" = "theaters"."id" AND "members"."partition" = "theaters"."partition"
+  LEFT OUTER JOIN "movies" "members_movies" ON "members_movies"."member_id" = "members"."id"
+  LEFT OUTER JOIN "movies" "members_favorite_comic_movies" ON "members_favorite_comic_movies"."member_id" = "members"."id" AND "members_favorite_comic_movies"."genre" = 'comic'
+  LEFT OUTER JOIN "movies" "members_favorite_mystery_movies" ON "members_favorite_mystery_movies"."member_id" = "members"."id" AND "members_favorite_mystery_movies"."genre" = 'mystery'
+  LIMIT 12
+sqlite_not_readable: |+
+  SELECT
+   "t0"."id" AS 'c0',
+  "t0"."name" AS 'c1',
+  "t1"."id" AS 'c2',
+  "t1"."account_number" AS 'c3',
+  "t2"."id" AS 'c4',
+  "t2"."name" AS 'c5',
+  "t2"."genre" AS 'c6',
+  "t3"."id" AS 'c7',
+  "t3"."name" AS 'c8',
+  "t3"."genre" AS 'c9',
+  "t4"."id" AS 'c10',
+  "t4"."name" AS 'c11',
+  "t4"."genre" AS 'c12'
+  FROM "theaters" "t0"
+  LEFT OUTER JOIN "members" "t1" ON "t1"."tid" = "t0"."id" AND "t1"."partition" = "t0"."partition"
+  LEFT OUTER JOIN "movies" "t2" ON "t2"."member_id" = "t1"."id"
+  LEFT OUTER JOIN "movies" "t3" ON "t3"."member_id" = "t1"."id" AND "t3"."genre" = 'comic'
+  LEFT OUTER JOIN "movies" "t4" ON "t4"."member_id" = "t1"."id" AND "t4"."genre" = 'mystery'
+  LIMIT 12
+mysql_readable: |+
+  SELECT
+   `theaters`.`id` AS 'id',
+  `theaters`.`name` AS 'name',
+  `members`.`id` AS 'members_id',
+  `members`.`account_number` AS 'members_account_number',
+  `members_movies`.`id` AS 'members_movies_id',
+  `members_movies`.`name` AS 'Movie Name',
+  `members_movies`.`genre` AS 'members_movies_genre',
+  `members_favorite_comic_movies`.`id` AS 'members_favorite_comic_movies_id',
+  `members_favorite_comic_movies`.`name` AS 'Favorite Comic Movie Name',
+  `members_favorite_comic_movies`.`genre` AS 'members_favorite_comic_movies_genre',
+  `members_favorite_mystery_movies`.`id` AS 'members_favorite_mystery_movies_id',
+  `members_favorite_mystery_movies`.`name` AS 'Favorite Mystery Movie Name',
+  `members_favorite_mystery_movies`.`genre` AS 'members_favorite_mystery_movies_genre'
+  FROM `theaters` `theaters`
+  LEFT OUTER JOIN `members` `members` ON `members`.`tid` = `theaters`.`id` AND `members`.`partition` = `theaters`.`partition`
+  LEFT OUTER JOIN `movies` `members_movies` ON `members_movies`.`member_id` = `members`.`id`
+  LEFT OUTER JOIN `movies` `members_favorite_comic_movies` ON `members_favorite_comic_movies`.`member_id` = `members`.`id` AND `members_favorite_comic_movies`.`genre` = 'comic'
+  LEFT OUTER JOIN `movies` `members_favorite_mystery_movies` ON `members_favorite_mystery_movies`.`member_id` = `members`.`id` AND `members_favorite_mystery_movies`.`genre` = 'mystery'
+  LIMIT 12
+mysql_not_readable: |+
+  SELECT
+   `t0`.`id` AS 'c0',
+  `t0`.`name` AS 'c1',
+  `t1`.`id` AS 'c2',
+  `t1`.`account_number` AS 'c3',
+  `t2`.`id` AS 'c4',
+  `t2`.`name` AS 'c5',
+  `t2`.`genre` AS 'c6',
+  `t3`.`id` AS 'c7',
+  `t3`.`name` AS 'c8',
+  `t3`.`genre` AS 'c9',
+  `t4`.`id` AS 'c10',
+  `t4`.`name` AS 'c11',
+  `t4`.`genre` AS 'c12'
+  FROM `theaters` `t0`
+  LEFT OUTER JOIN `members` `t1` ON `t1`.`tid` = `t0`.`id` AND `t1`.`partition` = `t0`.`partition`
+  LEFT OUTER JOIN `movies` `t2` ON `t2`.`member_id` = `t1`.`id`
+  LEFT OUTER JOIN `movies` `t3` ON `t3`.`member_id` = `t1`.`id` AND `t3`.`genre` = 'comic'
+  LEFT OUTER JOIN `movies` `t4` ON `t4`.`member_id` = `t1`.`id` AND `t4`.`genre` = 'mystery'
+  LIMIT 12

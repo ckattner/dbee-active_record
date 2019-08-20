@@ -12,12 +12,16 @@ Metrics/BlockLength:
 
 Metrics/MethodLength:
   Max: 25
+  Exclude:
+    - spec/db_helper.rb
 
 AllCops:
   TargetRubyVersion: 2.3
 
 Metrics/AbcSize:
   Max: 16
+  Exclude:
+    - spec/db_helper.rb
 
 Metrics/ClassLength:
   Max: 125

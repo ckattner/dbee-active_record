@@ -2,6 +2,8 @@ env:
   global:
     - CC_TEST_REPORTER_ID=036a8fd92cf0c323c9704c041015837d14889e47de936bab18287626ff3372c1
 language: ruby
+services:
+  - mysql
 rvm:
   # Build on the latest stable of all supported Rubies (https://www.ruby-lang.org/en/downloads/):
   - 2.3.8
@@ -14,6 +16,8 @@ before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
+  - cp spec/config/database.yaml.ci spec/config/database.yaml
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS dbee_test;'
 script:
   - bundle exec rubocop
   - bundle exec rspec spec --format documentation

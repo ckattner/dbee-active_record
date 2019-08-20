@@ -6,3 +6,46 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 #
+
+require 'dbee'
+require 'active_record'
+
+require_relative 'active_record_provider/expression_builder'
+require_relative 'active_record_provider/obfuscated_alias_maker'
+require_relative 'active_record_provider/safe_alias_maker'
+
+module Dbee
+  module Providers
+    # Provider which leverages ActiveRecord and Arel for generating SQL.
+    class ActiveRecordProvider
+      DEFAULT_TABLE_PREFIX  = 't'
+      DEFAULT_COLUMN_PREFIX = 'c'
+
+      attr_reader :readable, :table_alias_maker, :column_alias_maker
+
+      def initialize(
+        readable: true,
+        table_prefix: DEFAULT_TABLE_PREFIX,
+        column_prefix: DEFAULT_COLUMN_PREFIX
+      )
+        @readable           = readable
+        @table_alias_maker  = alias_maker(table_prefix)
+        @column_alias_maker = alias_maker(column_prefix)
+      end
+
+      def sql(model, query)
+        ExpressionBuilder.new(
+          model,
+          table_alias_maker,
+          column_alias_maker
+        ).add(query).to_sql
+      end
+
+      private
+
+      def alias_maker(prefix)
+        readable ? SafeAliasMaker.new : ObfuscatedAliasMaker.new(prefix)
+      end
+    end
+  end
+end
