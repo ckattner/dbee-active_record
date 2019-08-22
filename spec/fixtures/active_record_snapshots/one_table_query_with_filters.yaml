@@ -21,22 +21,13 @@ query:
       value: 'false' # notice how the value is a string, but the data model should be setup to be a boolean
     - type: equals
       key_path: active
-      value:
-        - false
-        - true
-        - null
-        - 'y'
-        - 'n'
-        - ''
+      value: [ true, false, [ null ] ] # test out nested value arrays
     - type: equals
       key_path: inspected
       value:
         - false
         - true
         - null
-        - 'y'
-        - 'n'
-        - ''
     - type: less_than_or_equal_to
       value: '2019-03-04'
       key_path: created_at
@@ -65,24 +56,15 @@ query:
         - 'hu'
       key_path: name
 sqlite_readable: |+
-  SELECT
-  "theaters"."id" AS 'ID #',
+  SELECT "theaters"."id" AS 'ID #',
   "theaters"."name" AS 'name'
   FROM "theaters" "theaters"
-  WHERE
-  ("theaters"."name" = 'AMC' OR "theaters"."name" = 'Regal') AND
+  WHERE ("theaters"."name" = 'AMC' OR "theaters"."name" = 'Regal') AND
   "theaters"."name" LIKE 'A%' AND
   "theaters"."name" LIKE '%m%' AND
-  "theaters"."active" = 'f' AND
-  ((((("theaters"."active" = 'f' OR "theaters"."active" = 't') OR
-  "theaters"."active" = 'f') OR "theaters"."active" = 't') OR
-  "theaters"."active" = 'f') OR
-  "theaters"."active" = 'f') AND
-  ((((("theaters"."inspected" = 'f' OR "theaters"."inspected" = 't') OR
-  "theaters"."inspected" IS NULL) OR
-  "theaters"."inspected" = 't') OR
-  "theaters"."inspected" = 'f') OR
-  "theaters"."inspected" IS NULL) AND
+  "theaters"."active" = 'false' AND
+  (("theaters"."active" = 't' OR "theaters"."active" = 'f') OR "theaters"."active" IS NULL) AND
+  (("theaters"."inspected" = 'f' OR "theaters"."inspected" = 't') OR "theaters"."inspected" IS NULL) AND
   "theaters"."created_at" <= '2019-03-04' AND
   "theaters"."created_at" < '2018-03-04' AND
   "theaters"."created_at" >= '2001-03-04' AND
@@ -91,24 +73,15 @@ sqlite_readable: |+
   ("theaters"."name" NOT LIKE '%tfli%' OR "theaters"."name" NOT LIKE '%ul%') AND
   ("theaters"."name" NOT LIKE 'netf%' OR "theaters"."name" NOT LIKE 'hu%')
 sqlite_not_readable: |+
-  SELECT
-  "t0"."id" AS 'c0',
+  SELECT "t0"."id" AS 'c0',
   "t0"."name" AS 'c1'
   FROM "theaters" "t0"
-  WHERE
-  ("t0"."name" = 'AMC' OR "t0"."name" = 'Regal') AND
+  WHERE ("t0"."name" = 'AMC' OR "t0"."name" = 'Regal') AND
   "t0"."name" LIKE 'A%' AND
   "t0"."name" LIKE '%m%' AND
-  "t0"."active" = 'f' AND
-  ((((("t0"."active" = 'f' OR "t0"."active" = 't') OR
-  "t0"."active" = 'f') OR "t0"."active" = 't') OR
-  "t0"."active" = 'f') OR
-  "t0"."active" = 'f') AND
-  ((((("t0"."inspected" = 'f' OR "t0"."inspected" = 't') OR
-  "t0"."inspected" IS NULL) OR
-  "t0"."inspected" = 't') OR
-  "t0"."inspected" = 'f') OR
-  "t0"."inspected" IS NULL) AND
+  "t0"."active" = 'false' AND
+  (("t0"."active" = 't' OR "t0"."active" = 'f') OR "t0"."active" IS NULL) AND
+  (("t0"."inspected" = 'f' OR "t0"."inspected" = 't') OR "t0"."inspected" IS NULL) AND
   "t0"."created_at" <= '2019-03-04' AND
   "t0"."created_at" < '2018-03-04' AND
   "t0"."created_at" >= '2001-03-04' AND
@@ -117,24 +90,15 @@ sqlite_not_readable: |+
   ("t0"."name" NOT LIKE '%tfli%' OR "t0"."name" NOT LIKE '%ul%') AND
   ("t0"."name" NOT LIKE 'netf%' OR "t0"."name" NOT LIKE 'hu%')
 mysql_readable: |+
-  SELECT
-  `theaters`.`id` AS 'ID #',
+  SELECT `theaters`.`id` AS 'ID #',
   `theaters`.`name` AS 'name'
   FROM `theaters` `theaters`
-  WHERE
-  (`theaters`.`name` = 'AMC' OR `theaters`.`name` = 'Regal') AND
+  WHERE (`theaters`.`name` = 'AMC' OR `theaters`.`name` = 'Regal') AND
   `theaters`.`name` LIKE 'A%' AND
   `theaters`.`name` LIKE '%m%' AND
-  `theaters`.`active` = FALSE AND
-  (((((`theaters`.`active` = FALSE OR `theaters`.`active` = TRUE) OR
-  `theaters`.`active` = FALSE) OR `theaters`.`active` = TRUE) OR
-  `theaters`.`active` = FALSE) OR
-  `theaters`.`active` = FALSE) AND
-  (((((`theaters`.`inspected` = FALSE OR `theaters`.`inspected` = TRUE) OR
-  `theaters`.`inspected` IS NULL) OR
-  `theaters`.`inspected` = TRUE) OR
-  `theaters`.`inspected` = FALSE) OR
-  `theaters`.`inspected` IS NULL) AND
+  `theaters`.`active` = 'false' AND
+  ((`theaters`.`active` = TRUE OR `theaters`.`active` = FALSE) OR `theaters`.`active` IS NULL) AND
+  ((`theaters`.`inspected` = FALSE OR `theaters`.`inspected` = TRUE) OR `theaters`.`inspected` IS NULL) AND
   `theaters`.`created_at` <= '2019-03-04' AND
   `theaters`.`created_at` < '2018-03-04' AND
   `theaters`.`created_at` >= '2001-03-04' AND
@@ -143,24 +107,15 @@ mysql_readable: |+
   (`theaters`.`name` NOT LIKE '%tfli%' OR `theaters`.`name` NOT LIKE '%ul%') AND
   (`theaters`.`name` NOT LIKE 'netf%' OR `theaters`.`name` NOT LIKE 'hu%')
 mysql_not_readable: |+
-  SELECT
-  `t0`.`id` AS 'c0',
+  SELECT `t0`.`id` AS 'c0',
   `t0`.`name` AS 'c1'
   FROM `theaters` `t0`
-  WHERE
-  (`t0`.`name` = 'AMC' OR `t0`.`name` = 'Regal') AND
+  WHERE (`t0`.`name` = 'AMC' OR `t0`.`name` = 'Regal') AND
   `t0`.`name` LIKE 'A%' AND
   `t0`.`name` LIKE '%m%' AND
-  `t0`.`active` = FALSE AND
-  (((((`t0`.`active` = FALSE OR `t0`.`active` = TRUE) OR
-  `t0`.`active` = FALSE) OR `t0`.`active` = TRUE) OR
-  `t0`.`active` = FALSE) OR
-  `t0`.`active` = FALSE) AND
-  (((((`t0`.`inspected` = FALSE OR `t0`.`inspected` = TRUE) OR
-  `t0`.`inspected` IS NULL) OR
-  `t0`.`inspected` = TRUE) OR
-  `t0`.`inspected` = FALSE) OR
-  `t0`.`inspected` IS NULL) AND
+  `t0`.`active` = 'false' AND
+  ((`t0`.`active` = TRUE OR `t0`.`active` = FALSE) OR `t0`.`active` IS NULL) AND
+  ((`t0`.`inspected` = FALSE OR `t0`.`inspected` = TRUE) OR `t0`.`inspected` IS NULL) AND
   `t0`.`created_at` <= '2019-03-04' AND
   `t0`.`created_at` < '2018-03-04' AND
   `t0`.`created_at` >= '2001-03-04' AND

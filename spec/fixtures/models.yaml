@@ -1,12 +1,6 @@
 Theaters, Members, and Movies:
   name: theaters
   table: theaters
-  columns:
-    - name: active
-      type: boolean
-      nullable: false
-    - name: inspected
-      type: boolean # this one is nullable
   models:
     - name: members
       table: members

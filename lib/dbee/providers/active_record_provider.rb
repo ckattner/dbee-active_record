@@ -21,6 +21,8 @@ module Dbee
       DEFAULT_TABLE_PREFIX  = 't'
       DEFAULT_COLUMN_PREFIX = 'c'
 
+      private_constant :DEFAULT_TABLE_PREFIX, :DEFAULT_COLUMN_PREFIX
+
       attr_reader :readable, :table_alias_maker, :column_alias_maker
 
       def initialize(

@@ -30,8 +30,8 @@ describe Dbee::Providers::ActiveRecordProvider do
                   model_name = snapshot['model_name']
                   query = Dbee::Query.make(snapshot['query'])
                   model = Dbee::Model.make(models[model_name])
-                  expected_sql  = snapshot[key].to_s.chomp.tr("\n", ' ')
-                  actual_sql    = described_class.new(readable: readable).sql(model, query)
+                  expected_sql = snapshot[key].to_s.chomp.tr("\n", ' ')
+                  actual_sql = described_class.new(readable: readable).sql(model, query)
 
                   error_msg = <<~ERROR_MSG
                     Expected: #{expected_sql}

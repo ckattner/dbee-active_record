@@ -28,10 +28,8 @@ module Dbee
 
           private_constant :METHODS
 
-          def make(filter, arel_column, model_column)
-            coerced_values = Array(filter.value).map { |v| model_column.coerce(v) }
-
-            predicates = coerced_values.map do |coerced_value|
+          def make(filter, arel_column)
+            predicates = normalize(filter.value).map do |coerced_value|
               method = METHODS[filter.class]
 
               raise ArgumentError, "cannot compile filter: #{filter}" unless method
@@ -39,13 +37,15 @@ module Dbee
               method.call(arel_column, coerced_value)
             end
 
-            clause = predicates.shift
-
-            predicates.each do |predicate|
-              clause = clause.or(predicate)
+            predicates.inject(predicates.shift) do |memo, predicate|
+              memo.or(predicate)
             end
+          end
 
-            clause
+          private
+
+          def normalize(value)
+            value ? Array(value).flatten : [nil]
           end
         end
       end

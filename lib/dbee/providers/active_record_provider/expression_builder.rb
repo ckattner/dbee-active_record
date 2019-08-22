@@ -58,10 +58,6 @@ module Dbee
           @key_paths_to_arel_columns ||= {}
         end
 
-        def key_paths_to_model_columns
-          @key_paths_to_model_columns ||= {}
-        end
-
         def where_maker
           @where_maker ||= WhereMaker.new
         end
@@ -81,11 +77,10 @@ module Dbee
         def add_filter(filter)
           add_key_path(filter.key_path)
 
-          key_path      = filter.key_path
-          arel_column   = key_paths_to_arel_columns[key_path]
-          model_column  = key_paths_to_model_columns[key_path]
+          key_path    = filter.key_path
+          arel_column = key_paths_to_arel_columns[key_path]
 
-          predicate = where_maker.make(filter, arel_column, model_column)
+          predicate = where_maker.make(filter, arel_column)
 
           @statement = statement.where(predicate)
 
@@ -126,11 +121,6 @@ module Dbee
           self
         end
 
-        def model_column(ancestors, key_path)
-          model_column = (ancestors.values.last || model).column(key_path.column_name)
-          key_paths_to_model_columns[key_path] = model_column
-        end
-
         def table(name, model, previous_table)
           table = Arel::Table.new(model.table)
           table.table_alias = table_alias_maker.make(name)
@@ -153,8 +143,6 @@ module Dbee
           return if key_paths_to_arel_columns.key?(key_path)
 
           ancestors = model.ancestors(key_path.ancestor_names)
-
-          model_column(ancestors, key_path)
 
           table = traverse_ancestors(ancestors)
 
