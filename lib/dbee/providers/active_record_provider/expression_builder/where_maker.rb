@@ -13,7 +13,7 @@ module Dbee
       class ExpressionBuilder
         # Derives Arel#where predicates.
         class WhereMaker
-          METHODS = {
+          FILTER_EVALUATORS = {
             Query::Filters::Contains => ->(column, val) { column.matches("%#{val}%") },
             Query::Filters::Equals => ->(column, val) { column.eq(val) },
             Query::Filters::GreaterThan => ->(column, val) { column.gt(val) },
@@ -26,11 +26,11 @@ module Dbee
             Query::Filters::StartsWith => ->(column, val) { column.matches("#{val}%") }
           }.freeze
 
-          private_constant :METHODS
+          private_constant :FILTER_EVALUATORS
 
           def make(filter, arel_column)
             predicates = normalize(filter.value).map do |coerced_value|
-              method = METHODS[filter.class]
+              method = FILTER_EVALUATORS[filter.class]
 
               raise ArgumentError, "cannot compile filter: #{filter}" unless method
 

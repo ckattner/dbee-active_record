@@ -17,7 +17,7 @@ module Dbee
             on ? on.and(arel_column.eq(value)) : arel_column.eq(value)
           end
 
-          METHODS = {
+          CONSTRAINT_RESOLVERS = {
             Model::Constraints::Reference => lambda do |constraint, on, table, previous_table|
               name    = constraint.name
               parent  = constraint.parent
@@ -32,11 +32,11 @@ module Dbee
             end
           }.freeze
 
-          private_constant :METHODS
+          private_constant :CONSTRAINT_RESOLVERS
 
           def make(constraints, table, previous_table)
             constraints.inject(nil) do |memo, constraint|
-              method = METHODS[constraint.class]
+              method = CONSTRAINT_RESOLVERS[constraint.class]
 
               raise ArgumentError, "constraint unhandled: #{constraint.class.name}" unless method
 
