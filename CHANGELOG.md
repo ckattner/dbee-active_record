@@ -1,3 +1,7 @@
+# 1.0.1 (August 26th, 2019)
+
+* Only support Dbee version 1.0.1 and above
+
 # 1.0.0 (August 23rd, 2019)
 
 Initial release, stable public API.
