@@ -1,3 +1,7 @@
+# 1.0.3 (August 27th, 2019)
+
+* Raises MissingConstraintError when trying to join to a table without at least one constraint.
+
 # 1.0.2 (August 26th, 2019)
 
 * Only support Dbee version 1.0.2 and above

@@ -19,6 +19,8 @@ module Dbee
       class ExpressionBuilder
         extend Forwardable
 
+        class MissingConstraintError < StandardError; end
+
         def_delegators :statement, :to_sql
 
         def initialize(model, table_alias_maker, column_alias_maker)
@@ -127,8 +129,10 @@ module Dbee
 
           on = constraint_maker.make(model.constraints, table, previous_table)
 
+          raise MissingConstraintError, "for: #{name}" unless on
+
           @statement = statement.join(table, ::Arel::Nodes::OuterJoin)
-          @statement = statement.on(on) if on
+          @statement = statement.on(on)
 
           tables[name] = table
         end

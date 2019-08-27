@@ -13,6 +13,35 @@ require 'db_helper'
 describe Dbee::Providers::ActiveRecordProvider do
   let(:models) { yaml_fixture('models.yaml') }
 
+  describe '#sql' do
+    before(:all) do
+      connect_to_db(:sqlite)
+    end
+
+    it 'errors when joining tables with no constraints' do
+      model_hash = {
+        name: :users,
+        models: [
+          { name: :logins }
+        ]
+      }
+
+      query_hash = {
+        fields: [
+          { key_path: 'id' },
+          { key_path: 'logins.id' }
+        ]
+      }
+
+      query = Dbee::Query.make(query_hash)
+      model = Dbee::Model.make(model_hash)
+
+      error_class = Dbee::Providers::ActiveRecordProvider::ExpressionBuilder::MissingConstraintError
+
+      expect { described_class.new.sql(model, query) }.to raise_error(error_class)
+    end
+  end
+
   describe 'Snapshot' do
     context 'Generating SQL' do
       %w[sqlite mysql].each do |dbms|
