@@ -30,15 +30,18 @@ describe Dbee::Providers::ActiveRecordProvider do
                   model_name = snapshot['model_name']
                   query = Dbee::Query.make(snapshot['query'])
                   model = Dbee::Model.make(models[model_name])
-                  expected_sql = snapshot[key].to_s.chomp.tr("\n", ' ')
-                  actual_sql = described_class.new(readable: readable).sql(model, query)
+
+                  expected_5_sql  = snapshot[key].to_s.chomp.tr("\n", ' ')
+                  expected_6_sql  = expected_5_sql.gsub('  ', ' ').gsub("'t'", '1').gsub("'f'", '0')
+                  actual_sql      = described_class.new(readable: readable).sql(model, query)
 
                   error_msg = <<~ERROR_MSG
-                    Expected: #{expected_sql}
-                    Actual:   #{actual_sql}
+                    Expected 5 SQL: #{expected_5_sql}
+                    Expected 6 SQL: #{expected_6_sql}
+                    Actual:         #{actual_sql}
                   ERROR_MSG
 
-                  expect(actual_sql).to eq(expected_sql), error_msg
+                  expect([expected_5_sql, expected_6_sql]).to include(actual_sql), error_msg
                 end
               end
             end

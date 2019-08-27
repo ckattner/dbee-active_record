@@ -21,8 +21,20 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.4.6'
 
-  s.add_dependency('activerecord', '~>5', '>=5.2.1')
-  s.add_dependency('dbee', '~>1', '>=1.0.1')
+  ar_version = ENV['AR_VERSION'] || ''
+
+  activerecord_version =
+    case ar_version
+    when '6'
+      ['>=6.0.0', '<7']
+    when '5'
+      ['>=5.2.1', '<6']
+    else
+      ['>=5.2.1', '<7']
+    end
+
+  s.add_dependency('activerecord', activerecord_version)
+  s.add_dependency('dbee', '~>1', '>=1.0.2')
 
   s.add_development_dependency('guard-rspec', '~>4.7')
   s.add_development_dependency('mysql2', '~>0.5')

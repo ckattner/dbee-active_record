@@ -18,7 +18,7 @@ query:
       value: m
     - type: equals
       key_path: active
-      value: 'false' # notice how the value is a string, but the data model should be setup to be a boolean
+      value: 'false'
     - type: equals
       key_path: active
       value: [ true, false, [ null ] ] # test out nested value arrays

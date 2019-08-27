@@ -9,6 +9,9 @@ Metrics/BlockLength:
     - context
     - specify
     - define
+  Exclude:
+    - spec/dbee/**/*
+    - dbee-active_record.gemspec
 
 Metrics/MethodLength:
   Max: 25
