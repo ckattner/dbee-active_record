@@ -10,9 +10,12 @@ rvm:
   - 2.5.5
   - 2.6.3
 env:
-  - "AR_VERSION=5"
-  - "AR_VERSION=6"
-  - "AR_VERSION="
+  - AR_VERSION=5
+  - AR_VERSION=6
+matrix:
+  exclude:
+    - rvm: 2.4.6
+      env: AR_VERSION=6
 cache: bundler
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
