@@ -42,10 +42,10 @@ describe Dbee::Providers::ActiveRecordProvider do
     end
   end
 
-  describe 'Snapshot' do
-    context 'Generating SQL' do
+  describe 'snapshot' do
+    context 'sql' do
       %w[sqlite mysql].each do |dbms|
-        context dbms do
+        context "using #{dbms}" do
           before(:all) do
             connect_to_db(dbms)
           end

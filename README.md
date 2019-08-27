@@ -53,6 +53,22 @@ Also, do not forget to run Rubocop:
 bundle exec rubocop
 ````
 
+### ActiveRecord Dependency
+
+This library supports both ActiveRecord 5 and 6.  Tests are adapted for both versions and should be ran against both to ensure compatibility.  By default the latest 6 will be chosen unless overridden.
+
+To install gems targeting version 5, run rubocop, and run rspec:
+
+````shell
+AR_VERSION=5 bundle update; AR_VERSION=5 bundle exec rake
+````
+
+To install gems targeting version 6, run rubocop, and run rspec:
+
+````shell
+AR_VERSION=6 bundle update; AR_VERSION=5 bundle exec rake
+````
+
 ### Publishing
 
 Note: ensure you have proper authorization before trying to publish new versions.

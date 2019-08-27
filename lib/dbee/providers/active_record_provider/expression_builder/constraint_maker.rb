@@ -24,11 +24,20 @@ module Dbee
 
               CONCAT_METHOD.call(on, table[name], previous_table[parent])
             end,
-            Model::Constraints::Static => lambda do |constraint, on, table, _previous_table|
-              name  = constraint.name
+            Model::Constraints::Static => lambda do |constraint, on, table, previous_table|
               value = constraint.value
 
-              CONCAT_METHOD.call(on, table[name], value)
+              unless constraint.name.empty?
+                column_name = constraint.name
+                on = CONCAT_METHOD.call(on, table[column_name], value)
+              end
+
+              unless constraint.parent.empty?
+                column_name = constraint.parent
+                on = CONCAT_METHOD.call(on, previous_table[column_name], value)
+              end
+
+              on
             end
           }.freeze
 

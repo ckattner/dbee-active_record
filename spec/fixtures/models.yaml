@@ -58,3 +58,25 @@ Theaters, Members, and Movies:
             - type: static
               name: genre
               value: comedy
+Reverse Polymorphic Example:
+  # In this example, an animal has a toy, but that toy is either a dog or cat toy, depending on
+  # the type of the animal.  So for this to work in this direction, static constraints pointed
+  # at the parent (animals) is needed.
+  name: animals
+  models:
+    - name: dog_toy
+      table: dog_toys
+      constraints:
+        - parent: toy_id
+          name: id
+        - type: static
+          parent: type
+          value: Dog
+    - name: cat_toy
+      table: cat_toys
+      constraints:
+        - parent: toy_id
+          name: id
+        - type: static
+          parent: type
+          value: Cat

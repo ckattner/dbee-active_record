@@ -1,3 +1,7 @@
+# 1.0.4 (August 27th, 2019)
+
+* Added support for Dbee static constraint against the parent part of an association.
+
 # 1.0.3 (August 27th, 2019)
 
 * Raises MissingConstraintError when trying to join to a table without at least one constraint.

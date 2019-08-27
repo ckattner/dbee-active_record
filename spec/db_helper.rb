@@ -52,5 +52,22 @@ def load_schema
       t.column :favorite, :boolean, default: false, null: false
       t.timestamps
     end
+
+    create_table :animals do |t|
+      t.column :toy_id, :integer
+      t.column :type, :string
+      t.column :name, :string
+      t.timestamps
+    end
+
+    create_table :dog_toys do |t|
+      t.column :squishy, :boolean
+      t.timestamps
+    end
+
+    create_table :cat_toys do |t|
+      t.column :laser, :boolean
+      t.timestamps
+    end
   end
 end

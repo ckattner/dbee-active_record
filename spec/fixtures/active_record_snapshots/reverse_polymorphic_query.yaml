@@ -1,0 +1,58 @@
+model_name: Reverse Polymorphic Example
+query:
+  fields:
+    - key_path: id
+    - key_path: type
+    - key_path: name
+    - key_path: dog_toy.id
+    - key_path: dog_toy.squishy
+    - key_path: cat_toy.id
+    - key_path: cat_toy.laser
+sqlite_readable: |+
+  SELECT
+   "animals"."id" AS 'id',
+  "animals"."type" AS 'type',
+  "animals"."name" AS 'name',
+  "dog_toy"."id" AS 'dog_toy_id',
+  "dog_toy"."squishy" AS 'dog_toy_squishy',
+  "cat_toy"."id" AS 'cat_toy_id',
+  "cat_toy"."laser" AS 'cat_toy_laser'
+  FROM "animals" "animals"
+  LEFT OUTER JOIN "dog_toys" "dog_toy" ON "dog_toy"."id" = "animals"."toy_id" AND "animals"."type" = 'Dog'
+  LEFT OUTER JOIN "cat_toys" "cat_toy" ON "cat_toy"."id" = "animals"."toy_id" AND "animals"."type" = 'Cat'
+sqlite_not_readable: |+
+  SELECT
+   "t0"."id" AS 'c0',
+   "t0"."type" AS 'c1',
+   "t0"."name" AS 'c2',
+   "t1"."id" AS 'c3',
+   "t1"."squishy" AS 'c4',
+   "t2"."id" AS 'c5',
+   "t2"."laser" AS 'c6'
+   FROM "animals" "t0"
+   LEFT OUTER JOIN "dog_toys" "t1" ON "t1"."id" = "t0"."toy_id" AND "t0"."type" = 'Dog'
+   LEFT OUTER JOIN "cat_toys" "t2" ON "t2"."id" = "t0"."toy_id" AND "t0"."type" = 'Cat'
+mysql_readable: |+
+  SELECT
+   `animals`.`id` AS 'id',
+  `animals`.`type` AS 'type',
+  `animals`.`name` AS 'name',
+  `dog_toy`.`id` AS 'dog_toy_id',
+  `dog_toy`.`squishy` AS 'dog_toy_squishy',
+  `cat_toy`.`id` AS 'cat_toy_id',
+  `cat_toy`.`laser` AS 'cat_toy_laser'
+  FROM `animals` `animals`
+  LEFT OUTER JOIN `dog_toys` `dog_toy` ON `dog_toy`.`id` = `animals`.`toy_id` AND `animals`.`type` = 'Dog'
+  LEFT OUTER JOIN `cat_toys` `cat_toy` ON `cat_toy`.`id` = `animals`.`toy_id` AND `animals`.`type` = 'Cat'
+mysql_not_readable: |+
+  SELECT
+   `t0`.`id` AS 'c0',
+  `t0`.`type` AS 'c1',
+  `t0`.`name` AS 'c2',
+  `t1`.`id` AS 'c3',
+  `t1`.`squishy` AS 'c4',
+  `t2`.`id` AS 'c5',
+  `t2`.`laser` AS 'c6'
+  FROM `animals` `t0`
+  LEFT OUTER JOIN `dog_toys` `t1` ON `t1`.`id` = `t0`.`toy_id` AND `t0`.`type` = 'Dog'
+  LEFT OUTER JOIN `cat_toys` `t2` ON `t2`.`id` = `t0`.`toy_id` AND `t0`.`type` = 'Cat'
