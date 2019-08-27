@@ -1,3 +1,8 @@
+# 1.0.2 (August 26th, 2019)
+
+* Only support Dbee version 1.0.2 and above
+* Added support and test matrices for ActiveRecord 6
+
 # 1.0.1 (August 26th, 2019)
 
 * Only support Dbee version 1.0.1 and above
