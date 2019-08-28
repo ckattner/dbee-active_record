@@ -13,8 +13,19 @@ module Dbee
       class ExpressionBuilder
         # Derives Arel#order predicates.
         class OrderMaker
+          SORTER_EVALUATORS = {
+            Query::Sorters::Ascending => ->(column) { column },
+            Query::Sorters::Descending => ->(column) { column.desc }
+          }.freeze
+
+          private_constant :SORTER_EVALUATORS
+
           def make(sorter, arel_column)
-            sorter.ascending? ? arel_column : arel_column.desc
+            method = SORTER_EVALUATORS[sorter.class]
+
+            raise ArgumentError, "cannot compile sorter: #{sorter}" unless method
+
+            method.call(arel_column)
           end
         end
       end

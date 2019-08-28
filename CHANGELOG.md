@@ -1,3 +1,7 @@
+# 1.1.0 (August 27th, 2019)
+
+* Only support Dbee version 1.1.0 and above
+
 # 1.0.4 (August 27th, 2019)
 
 * Added support for Dbee static constraint against the parent part of an association.
