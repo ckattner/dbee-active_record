@@ -10,7 +10,7 @@ sqlite_readable: |+
   FROM "owners" "owners"
   LEFT OUTER JOIN "animals" "dogs" ON "dogs"."owner_id" = "owners"."id"
   WHERE "dogs"."type" = 'Dog' AND
-  "dogs"."deleted" = 0
+  "dogs"."deleted" = 'f'
 sqlite_not_readable: |+
   SELECT
   "t0"."id" AS 'c0',
@@ -18,7 +18,7 @@ sqlite_not_readable: |+
   FROM "owners" "t0"
   LEFT OUTER JOIN "animals" "t1" ON "t1"."owner_id" = "t0"."id"
   WHERE "t1"."type" = 'Dog' AND
-  "t1"."deleted" = 0
+  "t1"."deleted" = 'f'
 mysql_readable: |+
   SELECT
   `owners`.`id` AS 'id',
