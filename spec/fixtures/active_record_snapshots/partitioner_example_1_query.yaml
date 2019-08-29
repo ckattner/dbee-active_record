@@ -1,0 +1,27 @@
+model_name: Partitioner Example 1
+query:
+  fields:
+    - key_path: id
+sqlite_readable: |+
+  SELECT "dogs"."id" AS 'id'
+  FROM "animals" "dogs"
+  WHERE "dogs"."type" = 'Dog' AND
+  "dogs"."deleted" = 0
+sqlite_not_readable: |+
+  SELECT
+  "t0"."id" AS 'c0'
+  FROM "animals" "t0"
+  WHERE "t0"."type" = 'Dog' AND
+  "t0"."deleted" = 0
+mysql_readable: |+
+  SELECT
+  `dogs`.`id` AS 'id'
+  FROM `animals` `dogs`
+  WHERE `dogs`.`type` = 'Dog' AND
+  `dogs`.`deleted` = FALSE
+mysql_not_readable: |+
+  SELECT
+  `t0`.`id` AS 'c0'
+  FROM `animals` `t0`
+  WHERE `t0`.`type` = 'Dog' AND
+  `t0`.`deleted` = FALSE

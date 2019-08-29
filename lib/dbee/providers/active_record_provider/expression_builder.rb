@@ -28,10 +28,15 @@ module Dbee
           @table_alias_maker  = table_alias_maker
           @column_alias_maker = column_alias_maker
 
-          @base_table = Arel::Table.new(model.table)
-          @base_table.table_alias = table_alias_maker.make(model.name)
+          clear
+        end
+
+        def clear
+          @base_table = make_table(model.table, model.name)
 
           build(base_table)
+
+          add_partitioners(base_table, model.partitioners)
         end
 
         def add(query)
@@ -104,9 +109,19 @@ module Dbee
           self
         end
 
+        def add_partitioners(table, partitioners)
+          partitioners.each do |partitioner|
+            arel_column = table[partitioner.name]
+            predicate   = arel_column.eq(partitioner.value)
+
+            build(statement.where(predicate))
+          end
+
+          self
+        end
+
         def table(name, model, previous_table)
-          table = Arel::Table.new(model.table)
-          table.table_alias = table_alias_maker.make(name)
+          table = make_table(model.table, name)
 
           on = ConstraintMaker.instance.make(model.constraints, table, previous_table)
 
@@ -114,6 +129,8 @@ module Dbee
 
           build(statement.join(table, ::Arel::Nodes::OuterJoin))
           build(statement.on(on))
+
+          add_partitioners(table, model.partitioners)
 
           tables[name] = table
         end
@@ -139,6 +156,12 @@ module Dbee
 
         def build(new_expression)
           @statement = new_expression
+        end
+
+        def make_table(table_name, alias_name)
+          Arel::Table.new(table_name).tap do |table|
+            table.table_alias = table_alias_maker.make(alias_name)
+          end
         end
       end
     end

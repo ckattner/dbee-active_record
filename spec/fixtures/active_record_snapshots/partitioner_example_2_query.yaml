@@ -1,0 +1,37 @@
+model_name: Partitioner Example 2
+query:
+  fields:
+    - key_path: id
+    - key_path: dogs.id
+sqlite_readable: |+
+  SELECT
+  "owners"."id" AS 'id',
+  "dogs"."id" AS 'dogs_id'
+  FROM "owners" "owners"
+  LEFT OUTER JOIN "animals" "dogs" ON "dogs"."owner_id" = "owners"."id"
+  WHERE "dogs"."type" = 'Dog' AND
+  "dogs"."deleted" = 0
+sqlite_not_readable: |+
+  SELECT
+  "t0"."id" AS 'c0',
+  "t1"."id" AS 'c1'
+  FROM "owners" "t0"
+  LEFT OUTER JOIN "animals" "t1" ON "t1"."owner_id" = "t0"."id"
+  WHERE "t1"."type" = 'Dog' AND
+  "t1"."deleted" = 0
+mysql_readable: |+
+  SELECT
+  `owners`.`id` AS 'id',
+  `dogs`.`id` AS 'dogs_id'
+  FROM `owners` `owners`
+  LEFT OUTER JOIN `animals` `dogs` ON `dogs`.`owner_id` = `owners`.`id`
+  WHERE `dogs`.`type` = 'Dog' AND
+  `dogs`.`deleted` = FALSE
+mysql_not_readable: |+
+  SELECT
+  `t0`.`id` AS 'c0',
+  `t1`.`id` AS 'c1'
+  FROM `owners` `t0`
+  LEFT OUTER JOIN `animals` `t1` ON `t1`.`owner_id` = `t0`.`id`
+  WHERE `t1`.`type` = 'Dog' AND
+  `t1`.`deleted` = FALSE

@@ -53,10 +53,17 @@ def load_schema
       t.timestamps
     end
 
+    create_table :owners do |t|
+      t.column :name, :string
+      t.timestamps
+    end
+
     create_table :animals do |t|
+      t.column :owner_id, :integer
       t.column :toy_id, :integer
       t.column :type, :string
       t.column :name, :string
+      t.column :deleted, :boolean
       t.timestamps
     end
 
