@@ -13,6 +13,8 @@ module Dbee
       class ExpressionBuilder
         # Derives Arel#where predicates.
         class WhereMaker
+          include Singleton
+
           FILTER_EVALUATORS = {
             Query::Filters::Contains => ->(column, val) { column.matches("%#{val}%") },
             Query::Filters::Equals => ->(column, val) { column.eq(val) },

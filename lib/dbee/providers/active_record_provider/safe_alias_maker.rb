@@ -12,8 +12,10 @@ module Dbee
     class ActiveRecordProvider
       # This class can be used when readable alias names are expected.
       class SafeAliasMaker
-        def make(name)
-          name.to_s.tr('.', '_')
+        def make(*parts)
+          parts.flatten
+               .join('_')
+               .tr('.', '_')
         end
       end
     end

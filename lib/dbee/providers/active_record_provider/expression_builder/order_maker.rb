@@ -13,6 +13,8 @@ module Dbee
       class ExpressionBuilder
         # Derives Arel#order predicates.
         class OrderMaker
+          include Singleton
+
           SORTER_EVALUATORS = {
             Query::Sorters::Ascending => ->(column) { column },
             Query::Sorters::Descending => ->(column) { column.desc }

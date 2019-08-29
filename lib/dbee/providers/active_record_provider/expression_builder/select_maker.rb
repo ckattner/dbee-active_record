@@ -13,6 +13,8 @@ module Dbee
       class ExpressionBuilder
         # Derives Arel#project predicates.
         class SelectMaker
+          include Singleton
+
           def make(column, arel_column, alias_maker)
             column_alias = quote(alias_maker.make(column.display))
 

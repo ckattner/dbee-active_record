@@ -31,7 +31,7 @@ module Dbee
           @base_table = Arel::Table.new(model.table)
           @base_table.table_alias = table_alias_maker.make(model.name)
 
-          @statement = base_table
+          build(base_table)
         end
 
         def add(query)
@@ -60,31 +60,14 @@ module Dbee
           @key_paths_to_arel_columns ||= {}
         end
 
-        def where_maker
-          @where_maker ||= WhereMaker.new
-        end
-
-        def order_maker
-          @order_maker ||= OrderMaker.new
-        end
-
-        def select_maker
-          @select_maker ||= SelectMaker.new
-        end
-
-        def constraint_maker
-          @constraint_maker ||= ConstraintMaker.new
-        end
-
         def add_filter(filter)
           add_key_path(filter.key_path)
 
           key_path    = filter.key_path
           arel_column = key_paths_to_arel_columns[key_path]
+          predicate   = WhereMaker.instance.make(filter, arel_column)
 
-          predicate = where_maker.make(filter, arel_column)
-
-          @statement = statement.where(predicate)
+          build(statement.where(predicate))
 
           self
         end
@@ -92,12 +75,11 @@ module Dbee
         def add_sorter(sorter)
           add_key_path(sorter.key_path)
 
-          key_path = sorter.key_path
+          key_path    = sorter.key_path
           arel_column = key_paths_to_arel_columns[key_path]
+          predicate   = OrderMaker.instance.make(sorter, arel_column)
 
-          predicate = order_maker.make(sorter, arel_column)
-
-          @statement = statement.order(predicate)
+          build(statement.order(predicate))
 
           self
         end
@@ -105,20 +87,19 @@ module Dbee
         def add_field(field)
           add_key_path(field.key_path)
 
-          key_path = field.key_path
+          key_path    = field.key_path
           arel_column = key_paths_to_arel_columns[key_path]
+          predicate   = SelectMaker.instance.make(field, arel_column, column_alias_maker)
 
-          predicate = select_maker.make(field, arel_column, column_alias_maker)
-
-          @statement = statement.project(predicate)
+          build(statement.project(predicate))
 
           self
         end
 
         def add_limit(limit)
-          @limit = limit ? limit.to_i : nil
+          limit = limit ? limit.to_i : nil
 
-          @statement = @statement.take(limit) if limit
+          build(statement.take(limit))
 
           self
         end
@@ -127,12 +108,12 @@ module Dbee
           table = Arel::Table.new(model.table)
           table.table_alias = table_alias_maker.make(name)
 
-          on = constraint_maker.make(model.constraints, table, previous_table)
+          on = ConstraintMaker.instance.make(model.constraints, table, previous_table)
 
           raise MissingConstraintError, "for: #{name}" unless on
 
-          @statement = statement.join(table, ::Arel::Nodes::OuterJoin)
-          @statement = statement.on(on)
+          build(statement.join(table, ::Arel::Nodes::OuterJoin))
+          build(statement.on(on))
 
           tables[name] = table
         end
@@ -146,7 +127,7 @@ module Dbee
         def add_key_path(key_path)
           return if key_paths_to_arel_columns.key?(key_path)
 
-          ancestors = model.ancestors(key_path.ancestor_names)
+          ancestors = model.ancestors!(key_path.ancestor_names)
 
           table = traverse_ancestors(ancestors)
 
@@ -154,6 +135,10 @@ module Dbee
           key_paths_to_arel_columns[key_path] = arel_column
 
           self
+        end
+
+        def build(new_expression)
+          @statement = new_expression
         end
       end
     end

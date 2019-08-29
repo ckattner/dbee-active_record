@@ -1,3 +1,8 @@
+# 1.2.0 (August 29th, 2019)
+
+* Add support for Dbee partitioners
+* Only support Dbee version 1.2.0 and above
+
 # 1.1.0 (August 27th, 2019)
 
 * Only support Dbee version 1.1.0 and above

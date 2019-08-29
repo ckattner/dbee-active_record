@@ -13,6 +13,8 @@ module Dbee
       class ExpressionBuilder
         # Can derive constraints for Arel table JOIN statements.
         class ConstraintMaker
+          include Singleton
+
           CONCAT_METHOD = lambda do |on, arel_column, value|
             on ? on.and(arel_column.eq(value)) : arel_column.eq(value)
           end
