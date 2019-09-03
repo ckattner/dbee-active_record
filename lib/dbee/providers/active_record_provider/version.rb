@@ -10,7 +10,7 @@
 module Dbee
   module Providers
     class ActiveRecordProvider
-      VERSION = '1.2.0'
+      VERSION = '2.0.0-alpha'
     end
   end
 end

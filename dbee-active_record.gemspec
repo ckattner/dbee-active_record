@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
     end
 
   s.add_dependency('activerecord', activerecord_version)
-  s.add_dependency('dbee', '~>1', '>=1.2.0')
+  s.add_dependency('dbee', '>=2.0.0.alpha')
 
   s.add_development_dependency('guard-rspec', '~>4.7')
   s.add_development_dependency('mysql2', '~>0.5')
