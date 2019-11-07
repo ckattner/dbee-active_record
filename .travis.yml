@@ -6,6 +6,7 @@ services:
   - mysql
 rvm:
   # Build on the latest stable of all supported Rubies (https://www.ruby-lang.org/en/downloads/):
+  - 2.3.8
   - 2.4.6
   - 2.5.5
   - 2.6.3

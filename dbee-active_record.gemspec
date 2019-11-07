@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/bluemarblepayroll/dbee-active_record'
   s.license     = 'MIT'
 
-  s.required_ruby_version = '>= 2.4.6'
+  s.required_ruby_version = '>= 2.3.8'
 
   ar_version = ENV['AR_VERSION'] || ''
 
@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
     end
 
   s.add_dependency('activerecord', activerecord_version)
-  s.add_dependency('dbee', '~>2')
+  s.add_dependency('dbee', '~>2', '>=2.0.2')
 
   s.add_development_dependency('guard-rspec', '~>4.7')
   s.add_development_dependency('mysql2', '~>0.5')

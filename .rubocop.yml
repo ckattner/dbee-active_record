@@ -19,7 +19,7 @@ Metrics/MethodLength:
     - spec/db_helper.rb
 
 AllCops:
-  TargetRubyVersion: 2.4
+  TargetRubyVersion: 2.3
 
 Metrics/AbcSize:
   Max: 16

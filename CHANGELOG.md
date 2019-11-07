@@ -1,3 +1,7 @@
+# 2.0.2 (November 7th, 2019)
+
+* Added/tested support for Dbee 2.0.2
+
 # 2.0.1 (October 25th, 2019)
 
 * Development dependency updates.
