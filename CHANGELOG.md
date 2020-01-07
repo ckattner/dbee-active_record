@@ -1,3 +1,8 @@
+# 2.0.3 (January 7th, 2019)
+
+* Added/tested support for Dbee 2.0.3
+* Added support for Ruby 2.6.5
+
 # 2.0.2 (November 7th, 2019)
 
 * Added/tested support for Dbee 2.0.2
