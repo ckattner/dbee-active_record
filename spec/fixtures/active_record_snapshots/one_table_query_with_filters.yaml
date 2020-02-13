@@ -45,6 +45,10 @@ query:
         - 'Netflix'
         - 'Hulu'
       key_path: name
+    - type: not_equals
+      value:
+        - 'YouTube Super Video'
+      key_path: name
     - type: not_contain
       value:
         - 'tfli'
@@ -59,67 +63,71 @@ sqlite_readable: |+
   SELECT "theaters"."id" AS 'ID #',
   "theaters"."name" AS 'name'
   FROM "theaters" "theaters"
-  WHERE ("theaters"."name" = 'AMC' OR "theaters"."name" = 'Regal') AND
+  WHERE "theaters"."name" IN ('AMC', 'Regal') AND
   "theaters"."name" LIKE 'A%' AND
   "theaters"."name" LIKE '%m%' AND
   "theaters"."active" = 'false' AND
-  (("theaters"."active" = 't' OR "theaters"."active" = 'f') OR "theaters"."active" IS NULL) AND
-  (("theaters"."inspected" = 'f' OR "theaters"."inspected" = 't') OR "theaters"."inspected" IS NULL) AND
+  "theaters"."active" IN ('t', 'f', NULL) AND
+  "theaters"."inspected" IN ('f', 't', NULL) AND
   "theaters"."created_at" <= '2019-03-04' AND
   "theaters"."created_at" < '2018-03-04' AND
   "theaters"."created_at" >= '2001-03-04' AND
   "theaters"."created_at" > '2002-03-04' AND
-  ("theaters"."name" != 'Netflix' OR "theaters"."name" != 'Hulu') AND
+  "theaters"."name" NOT IN ('Netflix', 'Hulu') AND
+  "theaters"."name" != 'YouTube Super Video' AND
   ("theaters"."name" NOT LIKE '%tfli%' OR "theaters"."name" NOT LIKE '%ul%') AND
   ("theaters"."name" NOT LIKE 'netf%' OR "theaters"."name" NOT LIKE 'hu%')
 sqlite_not_readable: |+
   SELECT "t0"."id" AS 'c0',
   "t0"."name" AS 'c1'
   FROM "theaters" "t0"
-  WHERE ("t0"."name" = 'AMC' OR "t0"."name" = 'Regal') AND
+  WHERE "t0"."name" IN ('AMC', 'Regal') AND
   "t0"."name" LIKE 'A%' AND
   "t0"."name" LIKE '%m%' AND
   "t0"."active" = 'false' AND
-  (("t0"."active" = 't' OR "t0"."active" = 'f') OR "t0"."active" IS NULL) AND
-  (("t0"."inspected" = 'f' OR "t0"."inspected" = 't') OR "t0"."inspected" IS NULL) AND
+  "t0"."active" IN ('t', 'f', NULL) AND
+  "t0"."inspected" IN ('f', 't', NULL) AND
   "t0"."created_at" <= '2019-03-04' AND
   "t0"."created_at" < '2018-03-04' AND
   "t0"."created_at" >= '2001-03-04' AND
   "t0"."created_at" > '2002-03-04' AND
-  ("t0"."name" != 'Netflix' OR "t0"."name" != 'Hulu') AND
+  "t0"."name" NOT IN ('Netflix', 'Hulu') AND
+  "t0"."name" != 'YouTube Super Video' AND
   ("t0"."name" NOT LIKE '%tfli%' OR "t0"."name" NOT LIKE '%ul%') AND
   ("t0"."name" NOT LIKE 'netf%' OR "t0"."name" NOT LIKE 'hu%')
 mysql_readable: |+
   SELECT `theaters`.`id` AS 'ID #',
   `theaters`.`name` AS 'name'
   FROM `theaters` `theaters`
-  WHERE (`theaters`.`name` = 'AMC' OR `theaters`.`name` = 'Regal') AND
+  WHERE `theaters`.`name` IN ('AMC', 'Regal') AND
   `theaters`.`name` LIKE 'A%' AND
   `theaters`.`name` LIKE '%m%' AND
   `theaters`.`active` = 'false' AND
-  ((`theaters`.`active` = TRUE OR `theaters`.`active` = FALSE) OR `theaters`.`active` IS NULL) AND
-  ((`theaters`.`inspected` = FALSE OR `theaters`.`inspected` = TRUE) OR `theaters`.`inspected` IS NULL) AND
+  `theaters`.`active` IN (TRUE, FALSE, NULL) AND
+  `theaters`.`inspected` IN (FALSE, TRUE, NULL) AND
   `theaters`.`created_at` <= '2019-03-04' AND
   `theaters`.`created_at` < '2018-03-04' AND
   `theaters`.`created_at` >= '2001-03-04' AND
   `theaters`.`created_at` > '2002-03-04' AND
-  (`theaters`.`name` != 'Netflix' OR `theaters`.`name` != 'Hulu') AND
+  `theaters`.`name` NOT IN ('Netflix', 'Hulu') AND
+  `theaters`.`name` != 'YouTube Super Video' AND
   (`theaters`.`name` NOT LIKE '%tfli%' OR `theaters`.`name` NOT LIKE '%ul%') AND
   (`theaters`.`name` NOT LIKE 'netf%' OR `theaters`.`name` NOT LIKE 'hu%')
 mysql_not_readable: |+
   SELECT `t0`.`id` AS 'c0',
   `t0`.`name` AS 'c1'
   FROM `theaters` `t0`
-  WHERE (`t0`.`name` = 'AMC' OR `t0`.`name` = 'Regal') AND
+  WHERE `t0`.`name` IN ('AMC', 'Regal') AND
   `t0`.`name` LIKE 'A%' AND
   `t0`.`name` LIKE '%m%' AND
   `t0`.`active` = 'false' AND
-  ((`t0`.`active` = TRUE OR `t0`.`active` = FALSE) OR `t0`.`active` IS NULL) AND
-  ((`t0`.`inspected` = FALSE OR `t0`.`inspected` = TRUE) OR `t0`.`inspected` IS NULL) AND
+  `t0`.`active` IN (TRUE, FALSE, NULL) AND
+  `t0`.`inspected` IN (FALSE, TRUE, NULL) AND
   `t0`.`created_at` <= '2019-03-04' AND
   `t0`.`created_at` < '2018-03-04' AND
   `t0`.`created_at` >= '2001-03-04' AND
   `t0`.`created_at` > '2002-03-04' AND
-  (`t0`.`name` != 'Netflix' OR `t0`.`name` != 'Hulu') AND
+  `t0`.`name` NOT IN ('Netflix', 'Hulu') AND
+  `t0`.`name` != 'YouTube Super Video' AND
   (`t0`.`name` NOT LIKE '%tfli%' OR `t0`.`name` NOT LIKE '%ul%') AND
   (`t0`.`name` NOT LIKE 'netf%' OR `t0`.`name` NOT LIKE 'hu%')

@@ -31,6 +31,24 @@ module Dbee
           private_constant :FILTER_EVALUATORS
 
           def make(filter, arel_column)
+            values = normalize(filter.value)
+
+            if filter.is_a?(Query::Filters::Equals) && values.length > 1
+              arel_column.in(values)
+            elsif filter.is_a?(Query::Filters::NotEquals) && values.length > 1
+              arel_column.not_in(values)
+            else
+              use_or(filter, arel_column)
+            end
+          end
+
+          private
+
+          def normalize(value)
+            value ? Array(value).flatten : [nil]
+          end
+
+          def use_or(filter, arel_column)
             predicates = normalize(filter.value).map do |coerced_value|
               method = FILTER_EVALUATORS[filter.class]
 
@@ -42,12 +60,6 @@ module Dbee
             predicates.inject(predicates.shift) do |memo, predicate|
               memo.or(predicate)
             end
-          end
-
-          private
-
-          def normalize(value)
-            value ? Array(value).flatten : [nil]
           end
         end
       end
