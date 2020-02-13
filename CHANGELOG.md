@@ -1,4 +1,9 @@
-# 2.0.3 (January 7th, 2019)
+# 2.0.4 (February 13th, 2020)
+
+* use Arel#in for Equal filters when there is more than one value
+* use Arel#not_in for NotEqual filters when there are is than one value
+
+# 2.0.3 (January 7th, 2020)
 
 * Added/tested support for Dbee 2.0.3
 * Added support for Ruby 2.6.5
