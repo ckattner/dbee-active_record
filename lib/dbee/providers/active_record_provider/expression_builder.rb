@@ -7,32 +7,29 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-require_relative 'expression_builder/constraint_maker'
-require_relative 'expression_builder/order_maker'
-require_relative 'expression_builder/select_maker'
-require_relative 'expression_builder/where_maker'
+require_relative 'maker'
 
 module Dbee
   module Providers
     class ActiveRecordProvider
       # This class can generate an Arel expression tree.
-      class ExpressionBuilder
-        extend Forwardable
-
+      class ExpressionBuilder < Maker # :nodoc: all
         class MissingConstraintError < StandardError; end
 
-        def_delegators :statement, :to_sql
-
         def initialize(model, table_alias_maker, column_alias_maker)
-          @model              = model
-          @table_alias_maker  = table_alias_maker
-          @column_alias_maker = column_alias_maker
+          super(column_alias_maker)
+
+          @model             = model
+          @table_alias_maker = table_alias_maker
 
           clear
         end
 
         def clear
-          @base_table = make_table(model.table, model.name)
+          @requires_group_by  = false
+          @group_by_columns   = []
+          @base_table         = make_table(model.table, model.name)
+          @select_all         = true
 
           build(base_table)
 
@@ -40,6 +37,8 @@ module Dbee
         end
 
         def add(query)
+          return self unless query
+
           query.fields.each   { |field| add_field(field) }
           query.sorters.each  { |sorter| add_sorter(sorter) }
           query.filters.each  { |filter| add_filter(filter) }
@@ -49,13 +48,27 @@ module Dbee
           self
         end
 
+        def to_sql
+          if requires_group_by
+            @requires_group_by = false
+            statement.group(group_by_columns) unless group_by_columns.empty?
+            @group_by_columns = []
+          end
+
+          return statement.project(select_maker.star(base_table)).to_sql if select_all
+
+          statement.to_sql
+        end
+
         private
 
         attr_reader :base_table,
                     :statement,
                     :model,
                     :table_alias_maker,
-                    :column_alias_maker
+                    :requires_group_by,
+                    :group_by_columns,
+                    :select_all
 
         def tables
           @tables ||= {}
@@ -70,7 +83,7 @@ module Dbee
 
           key_path    = filter.key_path
           arel_column = key_paths_to_arel_columns[key_path]
-          predicate   = WhereMaker.instance.make(filter, arel_column)
+          predicate   = where_maker.make(filter, arel_column)
 
           build(statement.where(predicate))
 
@@ -82,21 +95,39 @@ module Dbee
 
           key_path    = sorter.key_path
           arel_column = key_paths_to_arel_columns[key_path]
-          predicate   = OrderMaker.instance.make(sorter, arel_column)
+          predicate   = order_maker.make(sorter, arel_column)
 
           build(statement.order(predicate))
 
           self
         end
 
-        def add_field(field)
-          add_key_path(field.key_path)
+        def add_filter_key_paths(filters)
+          filters.each_with_object({}) do |filter, memo|
+            arel_key_column = add_key_path(filter.key_path)
 
-          key_path    = field.key_path
-          arel_column = key_paths_to_arel_columns[key_path]
-          predicate   = SelectMaker.instance.make(field, arel_column, column_alias_maker)
+            memo[arel_key_column] = filter
+          end
+        end
+
+        def add_field(field)
+          @select_all                 = false
+          arel_value_column           = add_key_path(field.key_path)
+          arel_key_columns_to_filters = add_filter_key_paths(field.filters)
+
+          predicate = select_maker.make(
+            field,
+            arel_key_columns_to_filters,
+            arel_value_column
+          )
 
           build(statement.project(predicate))
+
+          if field.aggregator?
+            @requires_group_by = true
+          else
+            group_by_columns << arel_value_column
+          end
 
           self
         end
@@ -123,7 +154,7 @@ module Dbee
         def table(name, model, previous_table)
           table = make_table(model.table, name)
 
-          on = ConstraintMaker.instance.make(model.constraints, table, previous_table)
+          on = constraint_maker.make(model.constraints, table, previous_table)
 
           raise MissingConstraintError, "for: #{name}" unless on
 
@@ -142,16 +173,16 @@ module Dbee
         end
 
         def add_key_path(key_path)
-          return if key_paths_to_arel_columns.key?(key_path)
+          return key_paths_to_arel_columns[key_path] if key_paths_to_arel_columns.key?(key_path)
 
           ancestors = model.ancestors!(key_path.ancestor_names)
 
           table = traverse_ancestors(ancestors)
 
           arel_column = table[key_path.column_name]
-          key_paths_to_arel_columns[key_path] = arel_column
 
-          self
+          # Note that this returns arel_column
+          key_paths_to_arel_columns[key_path] = arel_column
         end
 
         def build(new_expression)

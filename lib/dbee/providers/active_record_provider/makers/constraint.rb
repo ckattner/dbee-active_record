@@ -10,10 +10,20 @@
 module Dbee
   module Providers
     class ActiveRecordProvider
-      class ExpressionBuilder
+      module Makers # :nodoc: all
         # Can derive constraints for Arel table JOIN statements.
-        class ConstraintMaker
+        class Constraint
           include Singleton
+
+          def make(constraints, table, previous_table)
+            constraints.inject(nil) do |memo, constraint|
+              method = CONSTRAINT_RESOLVERS[constraint.class]
+
+              raise ArgumentError, "constraint unhandled: #{constraint.class.name}" unless method
+
+              method.call(constraint, memo, table, previous_table)
+            end
+          end
 
           CONCAT_METHOD = lambda do |on, arel_column, value|
             on ? on.and(arel_column.eq(value)) : arel_column.eq(value)
@@ -44,16 +54,6 @@ module Dbee
           }.freeze
 
           private_constant :CONSTRAINT_RESOLVERS
-
-          def make(constraints, table, previous_table)
-            constraints.inject(nil) do |memo, constraint|
-              method = CONSTRAINT_RESOLVERS[constraint.class]
-
-              raise ArgumentError, "constraint unhandled: #{constraint.class.name}" unless method
-
-              method.call(constraint, memo, table, previous_table)
-            end
-          end
         end
       end
     end

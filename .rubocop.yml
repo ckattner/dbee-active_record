@@ -1,5 +1,14 @@
-Metrics/LineLength:
+AllCops:
+  TargetRubyVersion: 2.5
+  NewCops: enable
+
+Layout/LineLength:
   Max: 100
+
+Metrics/AbcSize:
+  Max: 16
+  Exclude:
+    - spec/db_helper.rb
 
 Metrics/BlockLength:
   ExcludedMethods:
@@ -13,18 +22,10 @@ Metrics/BlockLength:
     - spec/dbee/**/*
     - dbee-active_record.gemspec
 
+Metrics/ClassLength:
+  Max: 140
+
 Metrics/MethodLength:
   Max: 25
   Exclude:
     - spec/db_helper.rb
-
-AllCops:
-  TargetRubyVersion: 2.3
-
-Metrics/AbcSize:
-  Max: 16
-  Exclude:
-    - spec/db_helper.rb
-
-Metrics/ClassLength:
-  Max: 125
