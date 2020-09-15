@@ -11,7 +11,7 @@ This library is a plugin for [Dbee](https://github.com/bluemarblepayroll/dbee). 
 To install through Rubygems:
 
 ````
-gem install install dbee-active_record
+gem install dbee-active_record
 ````
 
 You can also add this to your Gemfile:
