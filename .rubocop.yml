@@ -6,7 +6,7 @@ Layout/LineLength:
   Max: 100
 
 Metrics/AbcSize:
-  Max: 16
+  Max: 17
   Exclude:
     - spec/db_helper.rb
 
