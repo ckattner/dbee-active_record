@@ -11,11 +11,14 @@ require 'spec_helper'
 require 'db_helper'
 
 describe Dbee::Providers::ActiveRecordProvider::ExpressionBuilder do
-  let(:model)       { Dbee::Model.make(models['Patients']) }
+  let(:schema)      { Dbee::Schema.new(models['Patients']) }
   let(:alias_maker) { Dbee::Providers::ActiveRecordProvider::SafeAliasMaker.new }
+
+  let(:empty_query) { Dbee::Query.make(from: :patients) }
 
   let(:id_and_average_query) do
     Dbee::Query.make(
+      from: :patients,
       fields: [
         {
           key_path: :id,
@@ -43,6 +46,7 @@ describe Dbee::Providers::ActiveRecordProvider::ExpressionBuilder do
 
   let(:first_and_count_query) do
     Dbee::Query.make(
+      from: :patients,
       fields: [
         {
           key_path: :first,
@@ -57,7 +61,7 @@ describe Dbee::Providers::ActiveRecordProvider::ExpressionBuilder do
     )
   end
 
-  subject { described_class.new(model, alias_maker, alias_maker) }
+  subject { described_class.new(schema, alias_maker, alias_maker) }
 
   before(:all) do
     connect_to_db(:sqlite)
@@ -78,7 +82,9 @@ describe Dbee::Providers::ActiveRecordProvider::ExpressionBuilder do
       expect(sql).to     include('WHERE')
       expect(sql).to     include('ORDER')
 
-      sql = subject.clear.to_sql
+      subject.clear
+      subject.add(empty_query)
+      sql = subject.to_sql
 
       expect(sql).to     include('*')
       expect(sql).not_to include('GROUP')
@@ -89,6 +95,8 @@ describe Dbee::Providers::ActiveRecordProvider::ExpressionBuilder do
 
   describe '#to_sql' do
     specify 'when called with no fields, then called with fields removes star select' do
+      subject.add(empty_query)
+
       expect(subject.to_sql).to include('*')
 
       subject.add(id_and_average_query)

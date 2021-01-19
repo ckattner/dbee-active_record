@@ -13,40 +13,49 @@ module Dbee
   module Providers
     class ActiveRecordProvider
       # This class can generate an Arel expression tree.
+      # rubocop:disable Metrics/ClassLength
+      # TODO: fix ClassLength when I refactor to_sql to take the query.
       class ExpressionBuilder < Maker # :nodoc: all
         class MissingConstraintError < StandardError; end
 
-        def initialize(model, table_alias_maker, column_alias_maker)
+        def initialize(schema, table_alias_maker, column_alias_maker)
           super(column_alias_maker)
 
-          @model             = model
+          @schema            = schema
           @table_alias_maker = table_alias_maker
 
           clear
         end
 
+        # TODO: make clear and add private, and have to_sql take the query
         def clear
           @requires_group_by  = false
           @group_by_columns   = []
-          @base_table         = make_table(model.table, model.name)
           @select_all         = true
+          @from_model =       nil
 
-          build(base_table)
-
-          add_partitioners(base_table, model.partitioners)
+          self
         end
 
+        # rubocop:disable Metrics/AbcSize
+        # TODO: fix AbcSize when I refactor to_sql to take the query.
         def add(query)
           return self unless query
+
+          @from_model = schema.model_for_name!(query.from)
+          @base_table = make_table(from_model.table, @from_model.name)
+          build(base_table)
 
           query.fields.each   { |field| add_field(field) }
           query.sorters.each  { |sorter| add_sorter(sorter) }
           query.filters.each  { |filter| add_filter(filter) }
 
+          add_partitioners(base_table, from_model.partitioners)
           add_limit(query.limit)
 
           self
         end
+        # rubocop:enable Metrics/AbcSize
 
         def to_sql
           if requires_group_by
@@ -63,11 +72,12 @@ module Dbee
         private
 
         attr_reader :base_table,
+                    :from_model,
                     :statement,
-                    :model,
                     :table_alias_maker,
                     :requires_group_by,
                     :group_by_columns,
+                    :schema,
                     :select_all
 
         def tables
@@ -151,33 +161,47 @@ module Dbee
           self
         end
 
-        def table(name, model, previous_table)
-          table = make_table(model.table, name)
+        def table(ancestor_names, relationship, model, previous_table)
+          table = make_table(model.table, ancestor_names)
 
-          on = constraint_maker.make(model.constraints, table, previous_table)
+          on = constraint_maker.make(relationship.constraints, table, previous_table)
 
-          raise MissingConstraintError, "for: #{name}" unless on
+          raise MissingConstraintError, "for: #{ancestor_names}" unless on
 
           build(statement.join(table, ::Arel::Nodes::OuterJoin))
           build(statement.on(on))
 
           add_partitioners(table, model.partitioners)
 
-          tables[name] = table
+          tables[ancestor_names] = table
         end
 
-        def traverse_ancestors(ancestors)
-          ancestors.each_pair.inject(base_table) do |memo, (name, model)|
-            tables.key?(name) ? tables[name] : table(name, model, memo)
+        # Takes a query path which is a list of relationship then models
+        # repeating and converts it into an array of tuples of corresponding
+        # relationship and models.
+        def relationship_model_tuples(query_path)
+          query_path.chunk_while { |_first, second| second.is_a?(Dbee::Model) }
+        end
+
+        def traverse_query_path(query_path)
+          visited_path = []
+          rel_models = relationship_model_tuples(query_path)
+
+          rel_models.inject(base_table) do |prev_model, (relationship, next_model)|
+            visited_path += [relationship.name]
+            if tables.key?(visited_path)
+              tables[visited_path]
+            else
+              table(visited_path, relationship, next_model, prev_model)
+            end
           end
         end
 
         def add_key_path(key_path)
           return key_paths_to_arel_columns[key_path] if key_paths_to_arel_columns.key?(key_path)
 
-          ancestors = model.ancestors!(key_path.ancestor_names)
-
-          table = traverse_ancestors(ancestors)
+          query_path = schema.expand_query_path(from_model, key_path)
+          table = traverse_query_path(query_path)
 
           arel_column = table[key_path.column_name]
 
@@ -196,5 +220,6 @@ module Dbee
         end
       end
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end

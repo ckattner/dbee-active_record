@@ -35,9 +35,9 @@ module Dbee
         @column_alias_maker = alias_maker(column_prefix)
       end
 
-      def sql(model, query)
+      def sql(schema, query)
         ExpressionBuilder.new(
-          model,
+          schema,
           table_alias_maker,
           column_alias_maker
         ).add(query).to_sql
