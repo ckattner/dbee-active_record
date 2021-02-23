@@ -2,7 +2,7 @@
 
 source 'https://rubygems.org'
 
-gem 'dbee', git: 'https://github.com/bluemarblepayroll/dbee.git', ref: '619ea8e'
+gem 'dbee', git: 'https://github.com/bluemarblepayroll/dbee.git', ref: '7712b96'
 # gem 'dbee', path: '~/open-source/dbee'
 
 gemspec
