@@ -51,8 +51,6 @@ describe Dbee::Providers::ActiveRecordProvider do
             context type.to_s do
               let(:key) { "#{dbms}_#{type}" }
 
-              next unless dbms == 'sqlite' && readable
-
               yaml_fixture_files('active_record_snapshots').each_pair do |filename, snapshot|
                 specify File.basename(filename) do
                   model_name = snapshot['model_name']
