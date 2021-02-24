@@ -67,58 +67,23 @@ describe Dbee::Providers::ActiveRecordProvider::ExpressionBuilder do
     connect_to_db(:sqlite)
   end
 
-  describe '#clear' do
-    it 'provides fluent interface (returns self)' do
-      expect(subject.clear).to eq(subject)
-    end
-
-    it 'resets selecting, grouping, sorting, and filtering' do
-      subject.add(id_and_average_query)
-
-      sql = subject.to_sql
-
-      expect(sql).not_to include('*')
-      expect(sql).to     include('GROUP')
-      expect(sql).to     include('WHERE')
-      expect(sql).to     include('ORDER')
-
-      subject.clear
-      subject.add(empty_query)
-      sql = subject.to_sql
-
-      expect(sql).to     include('*')
-      expect(sql).not_to include('GROUP')
-      expect(sql).not_to include('WHERE')
-      expect(sql).not_to include('ORDER')
-    end
-  end
-
   describe '#to_sql' do
     specify 'when called with no fields, then called with fields removes star select' do
-      subject.add(empty_query)
-
-      expect(subject.to_sql).to include('*')
-
-      subject.add(id_and_average_query)
-
-      expect(subject.to_sql).not_to include('*')
+      expect(subject.to_sql(empty_query)).to include('*')
+      expect(subject.to_sql(id_and_average_query)).not_to include('*')
     end
 
     context 'with aggregation' do
       it 'generates the same sql when called multiple times' do
-        subject.add(id_and_average_query)
-
-        first_sql  = subject.to_sql
-        second_sql = subject.to_sql
+        first_sql  = subject.to_sql(id_and_average_query)
+        second_sql = subject.to_sql(id_and_average_query)
 
         expect(first_sql).to eq(second_sql)
 
-        subject.add(first_and_count_query)
+        third_sql  = subject.to_sql(first_and_count_query)
+        fourth_sql = subject.to_sql(first_and_count_query)
 
-        first_sql  = subject.to_sql
-        second_sql = subject.to_sql
-
-        expect(first_sql).to eq(second_sql)
+        expect(third_sql).to eq(fourth_sql)
       end
     end
   end

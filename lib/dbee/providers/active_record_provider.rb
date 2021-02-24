@@ -40,7 +40,7 @@ module Dbee
           schema,
           table_alias_maker,
           column_alias_maker
-        ).add(query).to_sql
+        ).to_sql(query)
       end
 
       private

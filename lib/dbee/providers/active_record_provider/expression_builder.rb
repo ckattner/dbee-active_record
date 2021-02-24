@@ -12,9 +12,8 @@ require_relative 'maker'
 module Dbee
   module Providers
     class ActiveRecordProvider
-      # This class can generate an Arel expression tree.
-      # rubocop:disable Metrics/ClassLength
-      # TODO: fix ClassLength when I refactor to_sql to take the query.
+      # This class can generate an Arel expression tree given a Dbee::Schema
+      # and Dbee::Query.
       class ExpressionBuilder < Maker # :nodoc: all
         class MissingConstraintError < StandardError; end
 
@@ -23,46 +22,11 @@ module Dbee
 
           @schema            = schema
           @table_alias_maker = table_alias_maker
-
-          clear
         end
 
-        # TODO: make clear and add private, and have to_sql take the query
-        def clear
-          @requires_group_by  = false
-          @group_by_columns   = []
-          @select_all         = true
-          @from_model =       nil
-
-          self
-        end
-
-        # rubocop:disable Metrics/AbcSize
-        # TODO: fix AbcSize when I refactor to_sql to take the query.
-        def add(query)
-          return self unless query
-
-          @from_model = schema.model_for_name!(query.from)
-          @base_table = make_table(from_model.table, @from_model.name)
-          build(base_table)
-
-          query.fields.each   { |field| add_field(field) }
-          query.sorters.each  { |sorter| add_sorter(sorter) }
-          query.filters.each  { |filter| add_filter(filter) }
-
-          add_partitioners(base_table, from_model.partitioners)
-          add_limit(query.limit)
-
-          self
-        end
-        # rubocop:enable Metrics/AbcSize
-
-        def to_sql
-          if requires_group_by
-            @requires_group_by = false
-            statement.group(group_by_columns) unless group_by_columns.empty?
-            @group_by_columns = []
-          end
+        def to_sql(query)
+          reset_query_state
+          build_query(query)
 
           return statement.project(select_maker.star(base_table)).to_sql if select_all
 
@@ -72,20 +36,46 @@ module Dbee
         private
 
         attr_reader :base_table,
+                    :key_paths_to_arel_columns,
                     :from_model,
                     :statement,
                     :table_alias_maker,
                     :requires_group_by,
                     :group_by_columns,
                     :schema,
-                    :select_all
+                    :select_all,
+                    :tables
 
-        def tables
-          @tables ||= {}
+        def reset_query_state
+          @base_table = nil
+          @key_paths_to_arel_columns = {}
+          @from_model        = nil
+          @group_by_columns  = []
+          @requires_group_by = false
+          @select_all        = true
+          @tables            = {}
         end
 
-        def key_paths_to_arel_columns
-          @key_paths_to_arel_columns ||= {}
+        def build_query(query)
+          establish_query_base(query)
+          process_fields_sorters_and_filters(query)
+
+          add_partitioners(base_table, from_model.partitioners)
+          add_limit(query.limit)
+
+          statement.group(group_by_columns) if requires_group_by && !group_by_columns.empty?
+        end
+
+        def establish_query_base(query)
+          @from_model = schema.model_for_name!(query.from)
+          @base_table = make_table(from_model.table, @from_model.name)
+          build(base_table)
+        end
+
+        def process_fields_sorters_and_filters(query)
+          query.fields.each   { |field| add_field(field) }
+          query.sorters.each  { |sorter| add_sorter(sorter) }
+          query.filters.each  { |filter| add_filter(filter) }
         end
 
         def add_filter(filter)
@@ -224,6 +214,5 @@ module Dbee
         end
       end
     end
-    # rubocop:enable Metrics/ClassLength
   end
 end
