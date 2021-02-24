@@ -166,22 +166,14 @@ module Dbee
           tables[ancestor_names] = table
         end
 
-        # Takes a query path which is a list of relationship then models
-        # repeating and converts it into an array of tuples of corresponding
-        # relationship and models.
-        def relationship_model_tuples(query_path)
-          query_path.chunk_while { |_first, second| second.is_a?(Dbee::Model) }
-        end
-
         # Travel the query path returning the table at the end of the path.
         #
         # Side effect: intermediate tables are created along the way and are
         # added to the "tables" hash keyed by path.
-        def traverse_query_path(query_path)
+        def traverse_query_path(expanded_query_path)
           visited_path = []
-          rel_models = relationship_model_tuples(query_path)
 
-          rel_models.inject(base_table) do |prev_model, (relationship, next_model)|
+          expanded_query_path.inject(base_table) do |prev_model, (relationship, next_model)|
             visited_path += [relationship.name]
             if tables.key?(visited_path)
               tables[visited_path]
@@ -194,8 +186,8 @@ module Dbee
         def add_key_path(key_path)
           return key_paths_to_arel_columns[key_path] if key_paths_to_arel_columns.key?(key_path)
 
-          query_path = schema.expand_query_path(from_model, key_path)
-          table = traverse_query_path(query_path)
+          expanded_query_path = schema.expand_query_path(from_model, key_path)
+          table = traverse_query_path(expanded_query_path)
 
           arel_column = table[key_path.column_name]
 
