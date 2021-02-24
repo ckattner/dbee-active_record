@@ -183,6 +183,10 @@ module Dbee
           query_path.chunk_while { |_first, second| second.is_a?(Dbee::Model) }
         end
 
+        # Travel the query path returning the table at the end of the path.
+        #
+        # Side effect: intermediate tables are created along the way and are
+        # added to the "tables" hash keyed by path.
         def traverse_query_path(query_path)
           visited_path = []
           rel_models = relationship_model_tuples(query_path)
