@@ -57,4 +57,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency('simplecov', '~>0.19.0')
   s.add_development_dependency('simplecov-console', '~>0.7.0')
   s.add_development_dependency('sqlite3', '~>1')
+  # Helpful to spot differences in longer SQL queries:
+  s.add_development_dependency('super_diff', '~>0.6')
 end
