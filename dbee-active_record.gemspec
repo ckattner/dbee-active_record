@@ -42,8 +42,7 @@ Gem::Specification.new do |s|
     end
 
   s.add_dependency('activerecord', activerecord_version)
-  # TODO: add this back once dbee updates have been released
-  # s.add_dependency('dbee', '~>2', '~>3')
+  s.add_dependency('dbee', '~>3')
 
   s.add_development_dependency('guard-rspec', '~>4.7')
   s.add_development_dependency('mysql2', '~>0.5')

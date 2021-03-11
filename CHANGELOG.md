@@ -1,4 +1,4 @@
-# 2.2.0 (TBD)
+# 2.2.0 (March 11th, 2021)
 
 ### Additions:
 
