@@ -17,8 +17,8 @@ describe Dbee::Providers::ActiveRecordProvider do
     end
 
     it 'errors when joining tables with no constraints' do
-      model_hash = {
-        users: { relationships: [{ 'name' => 'logins' }] },
+      schema_hash = {
+        users: { relationships: { logins: nil } },
         logins: nil
       }
 
@@ -31,7 +31,7 @@ describe Dbee::Providers::ActiveRecordProvider do
       }
 
       query = Dbee::Query.make(query_hash)
-      schema = Dbee::Schema.new(model_hash)
+      schema = Dbee::Schema.new(schema_hash)
 
       error_class = Dbee::Providers::ActiveRecordProvider::ExpressionBuilder::MissingConstraintError
 
