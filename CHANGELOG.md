@@ -1,3 +1,9 @@
+# 2.2.0 (March 11th, 2021)
+
+### Additions:
+
+* Support for graph based models.
+
 # 2.1.2 (October 15th, 2020)
 
 * Improved test coverage for Where maker

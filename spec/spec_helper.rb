@@ -7,8 +7,15 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-require 'yaml'
 require 'pry'
+require 'super_diff/rspec'
+require 'yaml'
+
+RSpec.configure do |config|
+  # Allow for disabling auto focus mode in certain environments like CI to
+  # prevent false positives when only a subset of the suite passes.
+  config.filter_run_when_matching :focus unless ENV['DISABLE_RSPEC_FOCUS'] == 'true'
+end
 
 unless ENV['DISABLE_SIMPLECOV'] == 'true'
   require 'simplecov'

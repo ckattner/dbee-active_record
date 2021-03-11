@@ -17,14 +17,13 @@ describe Dbee::Providers::ActiveRecordProvider do
     end
 
     it 'errors when joining tables with no constraints' do
-      model_hash = {
-        name: :users,
-        models: [
-          { name: :logins }
-        ]
+      schema_hash = {
+        users: { relationships: { logins: nil } },
+        logins: nil
       }
 
       query_hash = {
+        from: :users,
         fields: [
           { key_path: 'id' },
           { key_path: 'logins.id' }
@@ -32,11 +31,11 @@ describe Dbee::Providers::ActiveRecordProvider do
       }
 
       query = Dbee::Query.make(query_hash)
-      model = Dbee::Model.make(model_hash)
+      schema = Dbee::Schema.new(schema_hash)
 
       error_class = Dbee::Providers::ActiveRecordProvider::ExpressionBuilder::MissingConstraintError
 
-      expect { described_class.new.sql(model, query) }.to raise_error(error_class)
+      expect { described_class.new.sql(schema, query) }.to raise_error(error_class)
     end
   end
 
@@ -55,12 +54,13 @@ describe Dbee::Providers::ActiveRecordProvider do
               yaml_fixture_files('active_record_snapshots').each_pair do |filename, snapshot|
                 specify File.basename(filename) do
                   model_name = snapshot['model_name']
+
                   query = Dbee::Query.make(snapshot['query'])
-                  model = Dbee::Model.make(models[model_name])
+                  schema = Dbee::Schema.new(models[model_name])
 
                   expected_5_sql  = snapshot[key].to_s.chomp.tr("\n", ' ')
                   expected_6_sql  = expected_5_sql.gsub('  ', ' ').gsub("'t'", '1').gsub("'f'", '0')
-                  actual_sql      = described_class.new(readable: readable).sql(model, query)
+                  actual_sql      = described_class.new(readable: readable).sql(schema, query)
 
                   error_msg = <<~ERROR_MSG
                     Expected 5 SQL: #{expected_5_sql}
@@ -93,9 +93,9 @@ describe Dbee::Providers::ActiveRecordProvider do
                 specify File.basename(filename) do
                   model_name = snapshot['model_name']
                   query = Dbee::Query.make(snapshot['query'])
-                  model = Dbee::Model.make(models[model_name])
+                  schema = Dbee::Schema.new(models[model_name])
 
-                  sql = described_class.new(readable: readable).sql(model, query)
+                  sql = described_class.new(readable: readable).sql(schema, query)
 
                   expect { ActiveRecord::Base.connection.execute(sql) }.to_not raise_error
                 end
@@ -126,10 +126,10 @@ describe Dbee::Providers::ActiveRecordProvider do
 
       let(:snapshot) { yaml_file_read(*snapshot_path) }
       let(:query)    { Dbee::Query.make(snapshot['query']) }
-      let(:model)    { Dbee::Model.make(models['Patients']) }
+      let(:schema)   { Dbee::Schema.new(models['Patients']) }
 
       it 'pivots table rows into columns' do
-        sql = described_class.new.sql(model, query)
+        sql = described_class.new.sql(schema, query)
 
         results = ActiveRecord::Base.connection.execute(sql)
 
@@ -171,10 +171,10 @@ describe Dbee::Providers::ActiveRecordProvider do
 
       let(:snapshot) { yaml_file_read(*snapshot_path) }
       let(:query)    { Dbee::Query.make(snapshot['query']) }
-      let(:model)    { Dbee::Model.make(models['Patients']) }
+      let(:schema) { Dbee::Schema.new(models['Patients']) }
 
       it 'executes correct SQL aggregate functions' do
-        sql     = described_class.new.sql(model, query)
+        sql     = described_class.new.sql(schema, query)
         results = ActiveRecord::Base.connection.execute(sql)
 
         expect(results[0]).to include(

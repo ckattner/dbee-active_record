@@ -42,7 +42,7 @@ Gem::Specification.new do |s|
     end
 
   s.add_dependency('activerecord', activerecord_version)
-  s.add_dependency('dbee', '~>2', '>=2.1.1')
+  s.add_dependency('dbee', '~>3')
 
   s.add_development_dependency('guard-rspec', '~>4.7')
   s.add_development_dependency('mysql2', '~>0.5')
@@ -56,4 +56,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency('simplecov', '~>0.19.0')
   s.add_development_dependency('simplecov-console', '~>0.7.0')
   s.add_development_dependency('sqlite3', '~>1')
+  # Helpful to spot differences in longer SQL queries:
+  s.add_development_dependency('super_diff', '~>0.6')
 end
