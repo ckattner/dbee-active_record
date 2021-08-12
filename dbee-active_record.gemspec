@@ -17,15 +17,7 @@ Gem::Specification.new do |s|
   s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.bindir      = 'exe'
   s.executables = []
-  s.homepage    = 'https://github.com/bluemarblepayroll/dbee-active_record'
   s.license     = 'MIT'
-  s.metadata    = {
-    'bug_tracker_uri' => 'https://github.com/bluemarblepayroll/dbee-active_record/issues',
-    'changelog_uri' => 'https://github.com/bluemarblepayroll/dbee-active_record/blob/master/CHANGELOG.md',
-    'documentation_uri' => 'https://www.rubydoc.info/gems/dbee-active_record',
-    'homepage_uri' => s.homepage,
-    'source_code_uri' => s.homepage
-  }
 
   s.required_ruby_version = '>= 2.5'
 

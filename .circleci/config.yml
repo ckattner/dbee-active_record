@@ -1,0 +1,82 @@
+version: 2.1
+
+orbs:
+  status_to_ms_teams: bluemarblepayroll/status_to_ms_teams_pure_bash@1.0.0
+
+jobs:
+  build:
+    parameters:
+      use-bundler-cache:
+        type: boolean
+        default: true
+
+    docker:
+      - image: circleci/ruby:2.6.6-buster
+        environment:
+          FORBID_FOCUSED_SPECS: 1
+      - image: mysql@sha256:f3515b6a6502d872d5a37db78e4d225c0fcbf8da65d1faf8ce4609c92e2cbaf0
+        environment:
+          MYSQL_DATABASE: dbee_test
+          MYSQL_ALLOW_EMPTY_PASSWORD: 1
+          MYSQL_USER: root
+        command:
+          mysqld --sql_mode=TRADITIONAL,NO_AUTO_VALUE_ON_ZERO
+    working_directory: ~/dbee-active_record
+    steps:
+      - checkout
+      - run: sudo apt-get update && sudo apt-get install -y git curl libmcrypt-dev default-mysql-client
+      - run: dockerize -wait tcp://localhost:3306 -timeout 1m
+      - run: cp spec/config/database.yaml.ci spec/config/database.yaml
+      - run: mysql -h 127.0.0.1 -u root -e 'CREATE DATABASE IF NOT EXISTS dbee_test;'
+
+      # TODO: wrap bundler caching logic into an Orb:
+      - when:
+          condition: << parameters.use-bundler-cache >>
+          steps:
+            - restore_cache:
+                key: v1.0.0-build-ruby-dependency-cache-{{ checksum "dbee-active_record.gemspec" }}-{{ checksum "Gemfile" }}-{{ checksum ".ruby-version" }}
+
+      - run: bundle install --path vendor/bundle
+
+      - when:
+          condition: << parameters.use-bundler-cache >>
+          steps:
+            - save_cache:
+                key: v1.0.0-build-ruby-dependency-cache-{{ checksum "dbee-active_record.gemspec" }}-{{ checksum "Gemfile" }}-{{ checksum ".ruby-version" }}
+                paths:
+                  - vendor/bundle
+
+      - store_artifacts:
+          path: Gemfile.lock
+
+      - run: bundle exec rubocop
+
+      - run: COVERAGE=true bundle exec rspec -r rspec_junit_formatter --format progress --format RspecJunitFormatter -o test-results/rspec/results.xml
+
+      - store_test_results:
+          path: test-results
+
+      - store_artifacts:
+          path: coverage
+
+      - status_to_ms_teams/report:
+          webhook_url: $MS_TEAMS_WEBHOOK_URL
+
+workflows:
+  version: 2.1
+  build:
+    jobs:
+      - build:
+          context: org-global
+  monthly-gem-dependency-refresh-check:
+    triggers:
+      - schedule:
+          cron: '0 0 1 * *'
+          filters:
+            branches:
+              only:
+                - master
+    jobs:
+      - build:
+          context: org-global
+          use-bundler-cache: false
