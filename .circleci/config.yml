@@ -14,6 +14,7 @@ jobs:
       - image: circleci/ruby:2.6.6-buster
         environment:
           FORBID_FOCUSED_SPECS: 1
+          AR_VERSION: 5
       - image: mysql@sha256:f3515b6a6502d872d5a37db78e4d225c0fcbf8da65d1faf8ce4609c92e2cbaf0
         environment:
           MYSQL_DATABASE: dbee_test

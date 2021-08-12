@@ -1,5 +1,7 @@
 # Dbee Active Record Provider
 
+[![CircleCI](https://circleci.com/bb/bluemarble-ondemand/dbee-active_record/tree/master.svg?style=svg&circle-token=088be69cf3978bc526add53690e4919eb2fcce5c)](https://circleci.com/bb/bluemarble-ondemand/dbee-active_record/tree/master)
+
 Dbee does not ship with a SQL generator by default.  This library plugs into Dbee to provide SQL generation via ActiveRecord.  Technically speaking: this library does not use ActiveRecord for anything except connection information.  All actual SQL generation is performed using Arel.  There is no actual coupling of your domain ActiveRecord subclasses to Dbee.
 
 This library is a plugin for Dbee.  The Dbee repositories README file contains information about how to use the Data Model and Query API's.
