@@ -1,3 +1,8 @@
+# 2.3.0 (October 4th, 2021)
+
+### Additions:
+
+* Support for Dbee::Query#offset.
 # 2.2.0 (March 11th, 2021)
 
 ### Additions:

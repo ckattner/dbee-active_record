@@ -7,6 +7,7 @@ query:
     - key_path: members.id
     - key_path: members.account_number
   limit: 12
+  offset: 25
 sqlite_readable: |+
   SELECT
    "theaters"."id" AS 'id',
@@ -16,6 +17,7 @@ sqlite_readable: |+
   FROM "theaters" "theaters"
   LEFT OUTER JOIN "members" "members" ON "members"."tid" = "theaters"."id" AND "members"."partition" = "theaters"."partition"
   LIMIT 12
+  OFFSET 25
 sqlite_not_readable: |+
   SELECT
    "t0"."id" AS 'c0',
@@ -25,6 +27,7 @@ sqlite_not_readable: |+
   FROM "theaters" "t0"
   LEFT OUTER JOIN "members" "t1" ON "t1"."tid" = "t0"."id" AND "t1"."partition" = "t0"."partition"
   LIMIT 12
+  OFFSET 25
 mysql_readable: |+
   SELECT
    `theaters`.`id` AS 'id',
@@ -34,6 +37,7 @@ mysql_readable: |+
   FROM `theaters` `theaters`
   LEFT OUTER JOIN `members` `members` ON `members`.`tid` = `theaters`.`id` AND `members`.`partition` = `theaters`.`partition`
   LIMIT 12
+  OFFSET 25
 mysql_not_readable: |+
   SELECT
    `t0`.`id` AS 'c0',
@@ -43,3 +47,4 @@ mysql_not_readable: |+
   FROM `theaters` `t0`
   LEFT OUTER JOIN `members` `t1` ON `t1`.`tid` = `t0`.`id` AND `t1`.`partition` = `t0`.`partition`
   LIMIT 12
+  OFFSET 25

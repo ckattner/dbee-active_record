@@ -6,7 +6,7 @@ Layout/LineLength:
   Max: 100
 
 Metrics/AbcSize:
-  Max: 17
+  Max: 20
   Exclude:
     - spec/db_helper.rb
 
@@ -23,7 +23,7 @@ Metrics/BlockLength:
     - dbee-active_record.gemspec
 
 Metrics/ClassLength:
-  Max: 140
+  Max: 150
 
 Metrics/MethodLength:
   Max: 25

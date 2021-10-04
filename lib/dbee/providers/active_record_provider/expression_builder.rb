@@ -62,6 +62,7 @@ module Dbee
 
           add_partitioners(base_table, from_model.partitioners)
           add_limit(query.limit)
+          add_offset(query.offset)
 
           statement.group(group_by_columns) if requires_group_by && !group_by_columns.empty?
         end
@@ -136,6 +137,14 @@ module Dbee
           limit = limit ? limit.to_i : nil
 
           build(statement.take(limit))
+
+          self
+        end
+
+        def add_offset(offset)
+          offset = offset ? offset.to_i : nil
+
+          build(statement.skip(offset))
 
           self
         end
