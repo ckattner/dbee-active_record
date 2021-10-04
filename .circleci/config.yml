@@ -25,6 +25,7 @@ jobs:
     working_directory: ~/dbee-active_record
     steps:
       - checkout
+      - run: sudo apt-get --allow-releaseinfo-change update
       - run: sudo apt-get update && sudo apt-get install -y git curl libmcrypt-dev default-mysql-client
       - run: dockerize -wait tcp://localhost:3306 -timeout 1m
       - run: cp spec/config/database.yaml.ci spec/config/database.yaml
